@@ -25,13 +25,18 @@ docker compose ps  # Verify all services are "Up (healthy)"
 
 ### Step 1: Create Index Pattern
 1. Open http://localhost:5601
-2. Click hamburger menu (☰) → Management → Stack Management
-3. Click "Index Patterns" (under Kibana section)
-4. Click "Create index pattern"
+2. Click hamburger menu (☰) → Management
+3. Look for "Index Patterns" or "Index Management"
+   - **If you see "Index Patterns"**: Click it directly
+   - **If you see "Dashboards Management"**: Click it, then find "Index Patterns"
+4. Click "Create index pattern" button
 5. Enter index pattern: `logs-*`
-6. Click "Next step"
+6. Click "Next step" (or "Next" button)
 7. Select time field: `@timestamp`
 8. Click "Create index pattern"
+
+**Alternative path** (if above doesn't work):
+- Try: ☰ → Dashboards Management → Index Patterns → Create index pattern
 
 ### Step 2: Discover Your Logs
 1. Click hamburger menu → Analytics → Discover
