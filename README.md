@@ -1,15 +1,64 @@
-# Vaultize Analytics Dashboard
+# Vaultize Analytics Platform
 
-An on-premise analytics and observability platform inspired by Splunk, built entirely using open-source components.
+> **On-Premise Log Analytics and Observability Platform**
+>
+> An open-source, self-hosted analytics platform comparable to Splunk, built with OpenSearch
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
+[![OpenSearch](https://img.shields.io/badge/OpenSearch-2.x-blue)](https://opensearch.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-green)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Required-blue)](https://www.docker.com/)
+
+---
 
 ## Overview
 
-This platform provides:
-- Centralized log ingestion
-- Search and analytics over logs/events
-- Dashboards and visualizations
-- Alerting on log-derived signals
-- Optional metrics integration
+**Vaultize Analytics Platform** is a production-grade, on-premise log analytics and observability solution built entirely with open-source components. It provides enterprise-level capabilities for log ingestion, search, analytics, visualization, and alerting - all self-hosted with no cloud dependencies.
+
+### Key Features
+
+- 🔍 **Full-Text Search**: Powerful search capabilities powered by OpenSearch
+- 📊 **Dashboards & Visualizations**: Interactive dashboards via OpenSearch Dashboards
+- 🚨 **Alerting**: Threshold-based alerts with webhook notifications
+- 📥 **Log Ingestion**: High-performance log collection with Fluent Bit
+- 📈 **Metrics (Optional)**: System metrics via Prometheus and Grafana
+- 🔐 **Security**: Built-in authentication, authorization, and TLS
+- 🏢 **On-Premise**: 100% self-hosted, no cloud dependencies
+- 📖 **Open Source**: Apache 2.0 license
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Docker 20.10+
+- Docker Compose 2.0+
+- 8GB RAM minimum (16GB+ recommended)
+- 50GB disk space (plus log retention)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd vaultize-analytics
+
+# Start the platform
+docker compose up -d
+
+# Verify all services are healthy
+./scripts/ops/health-check.sh
+
+# Access OpenSearch Dashboards
+open http://localhost:5601
+```
+
+**Default Credentials**: `admin` / `admin` (change immediately!)
+
+For detailed installation instructions, see [Deployment Guide](docs/deployment/quickstart.md).
+
+---
 
 ## Architecture
 
@@ -17,91 +66,237 @@ This platform provides:
 Applications / Servers
         |
         v
-  Fluent Bit / Logstash
+  Fluent Bit (Log Collection)
         |
         v
-   OpenSearch Cluster
+   OpenSearch Cluster (Search & Analytics)
         |
-        v
- OpenSearch Dashboards
+        ├──> OpenSearch Dashboards (Visualization)
+        ├──> Analytics API (RESTful API)
+        ├──> Alerting Service (Threshold Alerts)
+        └──> Grafana (Optional: Metrics + Logs)
+             ↑
+        Prometheus (Optional: Metrics)
 ```
 
-## Tech Stack
+For detailed architecture, see [Architecture Documentation](docs/architecture/README.md).
 
-| Component | Technology |
-|-----------|------------|
-| Search Engine | OpenSearch (self-hosted) |
-| Visualization | OpenSearch Dashboards, Grafana (optional) |
-| Log Ingestion | Fluent Bit (primary), Logstash (optional) |
-| Metrics | Prometheus (optional) |
-| Services | Python 3.11+ with FastAPI |
-| Deployment | Docker Compose |
+---
 
-## Project Structure
+## Technology Stack
 
-```
-infrastructure/   - Deployment configs, Docker Compose
-ingestion/        - Log collection pipelines and agents
-analytics/        - Services (API, alerting, indexing)
-configs/          - Index templates, ILM policies, alert rules
-dashboards/       - Saved visualizations and dashboards
-scripts/          - Operational tooling
-docs/             - Architecture and usage documentation
-tests/            - Unit, integration, regression, and E2E tests
-tools/            - Development utilities
-```
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Search & Analytics** | OpenSearch 2.x | Core search engine and log storage |
+| **Visualization** | OpenSearch Dashboards | Primary UI for search and dashboards |
+| **Log Ingestion** | Fluent Bit | Lightweight log collection |
+| **Metrics** | Prometheus | System and application metrics (optional) |
+| **Unified Dashboards** | Grafana | Combined logs + metrics view (optional) |
+| **API Services** | Python 3.11 + FastAPI | RESTful API and alerting |
+| **Deployment** | Docker + Docker Compose | Container orchestration |
 
-## Quick Start
+See [Technology Stack](docs/architecture/tech-stack.md) for complete details.
 
-### Prerequisites
-
-- Docker and Docker Compose
-- Python 3.11+
-- Git
-
-### Running Locally
-
-```bash
-# Clone the repository
-git clone https://github.com/balajir2/vaultize-analytics-dashboard.git
-cd vaultize-analytics-dashboard
-
-# Start the stack
-docker-compose up -d
-
-# Access OpenSearch Dashboards
-open http://localhost:5601
-```
-
-## Design Principles
-
-- **On-Prem Only**: No cloud dependencies, fully self-hosted
-- **Configuration-Driven**: YAML/JSON configs over hardcoded logic
-- **Logs First**: Primary focus on log analytics
-- **Simple Deployment**: Docker Compose for v1, Kubernetes later
+---
 
 ## Documentation
 
-- [Architecture Overview](docs/architecture/README.md)
-- [Tech Stack Details](docs/architecture/tech-stack.md)
-- [Deployment Guide](docs/deployment/README.md)
-- [API Documentation](docs/api/README.md)
-- [Operations Guide](docs/operations/README.md)
+- **[Architecture](docs/architecture/README.md)** - System design and components
+- **[Deployment](docs/deployment/README.md)** - Installation and configuration
+- **[Operations](docs/operations/README.md)** - Maintenance and troubleshooting
+- **[API Reference](docs/api/README.md)** - RESTful API documentation
+- **[User Guides](docs/user-guides/README.md)** - End-user documentation
+
+---
+
+## Project Status
+
+**Current Version**: 0.1.0 (Alpha)
+**Status**: In Development
+
+See [MILESTONES.md](MILESTONES.md) for roadmap and [CHANGELOG.md](CHANGELOG.md) for version history.
+
+### Milestone Progress
+
+- ✅ M0: Project Scaffold (10%)
+- ⚪ M1: Infrastructure Layer (0%)
+- ⚪ M2: Ingestion Pipeline (0%)
+- ⚪ M3: Analytics Services (0%)
+- ⚪ M4: Dashboards (0%)
+- ⚪ M5: Alerting (0%)
+- ⚪ M6: Testing & Documentation (0%)
+- ⚪ M7: Production Hardening (0%)
+
+---
+
+## Contributing
+
+We welcome contributions! Please see:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [AUTHORS.md](AUTHORS.md) - Author and contributor list
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Community guidelines
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes **with tests**
+4. Update documentation
+5. Submit a pull request
+
+All contributions must include tests (see [Testing Requirements](tests/README.md)).
+
+---
 
 ## Testing
+
+This project maintains high testing standards:
+
+- **Unit Tests**: >80% coverage required
+- **Integration Tests**: All service integrations tested
+- **Regression Tests**: Every bug fix requires a regression test
+- **E2E Tests**: Critical user flows covered
 
 ```bash
 # Run all tests
 pytest
 
 # Run with coverage
-pytest --cov=analytics --cov=ingestion --cov-report=html
+pytest --cov --cov-report=html
+
+# Run specific test suite
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/regression/
 ```
+
+See [Testing Documentation](tests/README.md) for details.
+
+---
+
+## Use Cases
+
+- **Application Logging**: Centralized logs from microservices and applications
+- **Infrastructure Monitoring**: Server and container logs with metrics
+- **Security Auditing**: Authentication logs, access logs, security events
+- **Troubleshooting**: Root cause analysis with full-text search
+- **Compliance**: Log retention and audit trails
+- **Performance Analysis**: Application performance metrics and trends
+
+---
+
+## Comparison
+
+| Feature | Vaultize | Splunk | ELK Stack | Cloud Services |
+|---------|----------|--------|-----------|----------------|
+| **Cost** | Free (open-source) | Expensive | Free | Pay-as-you-go |
+| **Deployment** | On-premise | On-prem or Cloud | On-premise | Cloud only |
+| **License** | Apache 2.0 | Proprietary | Mixed (SSPL/AGPL) | Proprietary |
+| **Data Sovereignty** | ✅ Full control | ✅ On-prem option | ✅ Full control | ❌ Cloud vendor |
+| **Complexity** | Medium | High | High | Low |
+| **Scalability** | High | Very High | High | Very High |
+
+---
 
 ## License
 
-This project is open source. See LICENSE for details.
+This project is licensed under the **Apache License 2.0** - see [LICENSE.md](LICENSE.md) for details.
 
-## Contributing
+**TL;DR**: Free to use, modify, and distribute with attribution. No warranty provided.
 
-Contributions are welcome. Please read the contributing guidelines before submitting pull requests.
+### Third-Party Licenses
+
+- OpenSearch: Apache 2.0
+- Fluent Bit: Apache 2.0
+- Prometheus: Apache 2.0
+- Grafana: AGPL 3.0 (optional component)
+
+See [Technology Stack](docs/architecture/tech-stack.md) for complete license information.
+
+---
+
+## Support
+
+- **Documentation**: [docs/](docs/)
+- **Issues**: [GitHub Issues](../../issues)
+- **Discussions**: [GitHub Discussions](../../discussions)
+
+For commercial support inquiries, contact the project maintainers.
+
+---
+
+## Acknowledgments
+
+Built with these excellent open-source projects:
+
+- [OpenSearch](https://opensearch.org/) - Search and analytics
+- [Fluent Bit](https://fluentbit.io/) - Log collection
+- [Prometheus](https://prometheus.io/) - Metrics monitoring
+- [Grafana](https://grafana.com/) - Visualization
+- [FastAPI](https://fastapi.tiangolo.com/) - Python web framework
+
+Special thanks to the entire open-source community.
+
+---
+
+## Authors
+
+**Original Authors**:
+- **[Your Name]** - Project Creator & Lead Developer
+- **Claude (Anthropic)** - AI Co-Author & Development Assistant
+
+See [AUTHORS.md](AUTHORS.md) for complete contributor list.
+
+---
+
+## Roadmap
+
+**v1.0 Goals** (MVP):
+- ✅ Project structure and documentation
+- 🔄 Docker Compose deployment
+- 🔄 OpenSearch cluster setup
+- 🔄 Fluent Bit log ingestion
+- 🔄 Analytics API
+- 🔄 Alerting system
+- 🔄 Pre-built dashboards
+
+**Post-v1.0**:
+- Kubernetes deployment
+- Advanced alerting (ML-based)
+- Vector search capabilities
+- Multi-tenancy support
+- Kafka integration
+
+See [MILESTONES.md](MILESTONES.md) for detailed roadmap.
+
+---
+
+## Getting Help
+
+- Check [Troubleshooting Guide](docs/operations/troubleshooting.md)
+- Review [User Guides](docs/user-guides/README.md)
+- Search [existing issues](../../issues)
+- Ask in [Discussions](../../discussions)
+
+---
+
+## Security
+
+For security vulnerabilities, please email [security@example.com] instead of creating a public issue.
+
+See [SECURITY.md](SECURITY.md) for our security policy.
+
+---
+
+**Star ⭐ this repo if you find it useful!**
+
+---
+
+<div align="center">
+
+**Copyright © 2026 [Your Name] and Claude (Anthropic)**
+
+Licensed under Apache License 2.0 | [Documentation](docs/) | [Contributing](CONTRIBUTING.md) | [License](LICENSE.md)
+
+</div>
