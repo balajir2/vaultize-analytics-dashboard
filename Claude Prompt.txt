@@ -1,0 +1,169 @@
+## 📌 Claude Code – Project Initialization Prompt
+
+> **Role & Intent**
+>
+> You are a senior platform architect and staff-level backend engineer.
+> Your task is to design and scaffold an **on-premise, open-source analytics and observability platform** comparable to **Splunk**, using **OpenSearch as the core analytics engine**.
+>
+> This is a **product-grade system**, not a demo.
+
+---
+
+### 🔎 Problem Statement
+
+We want to build an **on-prem analytics dashboard platform** that supports:
+
+* Centralized **log ingestion**
+* **Search and analytics** over logs and events
+* **Dashboards and visualizations**
+* **Alerting**
+* Optional **metrics integration** (Prometheus)
+* Future extensibility for **semantic / vector search**, but vectors are **not the primary goal**
+
+The system must be:
+
+* Fully **on-prem deployable**
+* **Open-source first**
+* Modular and extensible
+* Production-oriented (security, scale, observability)
+
+---
+
+### 🧱 Core Technology Choices (Fixed)
+
+Use these as **hard constraints**:
+
+* **Search & Analytics**: OpenSearch (self-hosted)
+* **Visualization**: OpenSearch Dashboards
+* **Log ingestion**: Fluent Bit (preferred), optional Logstash
+* **Metrics (optional but recommended)**: Prometheus
+* **Unified dashboards (optional)**: Grafana
+* **Deployment**: Docker + Docker Compose (Kubernetes later)
+* **Language for services/tools**: Python
+* **Configuration-first approach** (YAML / JSON)
+
+---
+
+### 🎯 Functional Requirements
+
+Claude, assume the system must support:
+
+1. **Log ingestion**
+
+   * Structured (JSON) and unstructured logs
+   * Multiple sources (apps, servers, containers)
+   * Pluggable ingestion pipeline
+
+2. **Search & Analytics**
+
+   * Time-based queries
+   * Full-text search
+   * Field-based filtering
+   * Aggregations (count, percentile, histogram)
+   * Saved searches
+
+3. **Dashboards**
+
+   * Log-driven dashboards
+   * Time range filtering
+   * Reusable visualizations
+
+4. **Alerting**
+
+   * Threshold-based alerts
+   * Scheduled queries
+   * Webhook support
+
+5. **Non-functional**
+
+   * On-prem friendly
+   * Horizontal scalability
+   * Clear separation of concerns
+   * Secure by default (auth boundaries clearly defined)
+
+---
+
+### 🚫 Explicit Non-Goals (for v1)
+
+* No SaaS / cloud dependencies
+* No ML-heavy features in v1
+* No proprietary components
+* No UI frameworks beyond OpenSearch Dashboards / Grafana
+
+---
+
+### 🏗️ What You Must Produce
+
+Claude, your output should include:
+
+#### 1. **Clear System Architecture**
+
+* High-level component diagram (described in text)
+* Data flow explanation
+
+#### 2. **Project Directory Structure**
+
+Design a **clean mono-repo layout**, for example:
+
+* infrastructure
+* ingestion
+* analytics
+* dashboards
+* configs
+* docs
+* scripts
+
+Each directory should have a **clear responsibility**.
+
+#### 3. **Technology Responsibilities**
+
+Explain **why each component exists** and what problem it solves.
+
+#### 4. **Deployment Strategy**
+
+* Docker Compose–based local & on-prem deployment
+* Environment separation (dev / prod mindset)
+
+#### 5. **Future Extension Points**
+
+Explicitly call out:
+
+* Where Prometheus integrates
+* Where vector search *could* be added later
+* Where alerting logic evolves
+
+---
+
+### 🧠 Design Principles to Follow
+
+* Think like a platform team, not a tutorial author
+* Prefer clarity over cleverness
+* Make trade-offs explicit
+* Assume other engineers will extend this system
+* Treat OpenSearch as the **core analytics engine**, not a vector DB
+
+---
+
+### 📦 Output Format
+
+Structure your response as:
+
+1. **Executive Summary**
+2. **System Architecture**
+3. **Directory Structure (tree format)**
+4. **Component Responsibilities**
+5. **Deployment Model**
+6. **Future Enhancements**
+
+---
+
+### ✅ Success Criteria
+
+A senior engineer should be able to:
+
+* Clone the repo
+* Understand the architecture in 10 minutes
+* Run the system locally
+* Extend it confidently
+
+
