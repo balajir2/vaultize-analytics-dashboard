@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.opensearch_client import OpenSearchClient
-from app.routers import health, search
+from app.routers import health, search, aggregations, indices
 
 # ============================================================================
 # Logging Configuration
@@ -123,6 +123,8 @@ async def global_exception_handler(request, exc):
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(search.router, prefix=settings.api_root_path, tags=["Search"])
+app.include_router(aggregations.router, prefix=settings.api_root_path, tags=["Aggregations"])
+app.include_router(indices.router, prefix=f"{settings.api_root_path}/indices", tags=["Index Management"])
 
 # ============================================================================
 # Root Endpoint

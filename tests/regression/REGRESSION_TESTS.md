@@ -147,6 +147,39 @@ Updated all port mappings in docker-compose.yml to use environment variables wit
 
 ---
 
+### RT-004: Analytics API Endpoints
+
+**File**: `test_regression_004_analytics_api_endpoints.py`
+**Date**: 2026-02-04
+**Severity**: High
+
+**Original Feature**:
+Analytics API with comprehensive endpoints for health checks, search, aggregations, and index management was implemented in version 0.2.1+. The API provides a RESTful interface to OpenSearch with full Pydantic validation and OpenAPI documentation.
+
+**How to Use**:
+1. Ensure OpenSearch is running at http://localhost:9200
+2. Ensure Analytics API is running at http://localhost:8000
+3. Generate sample data: `python scripts/data/generate_sample_logs.py`
+4. Run test: `pytest tests/regression/test_regression_004_analytics_api_endpoints.py -v`
+
+**Implementation Details**:
+- Health check endpoints (/health/, /health/liveness, /health/readiness)
+- Search endpoints (GET /search/simple, POST /search)
+- Aggregation endpoints (POST /aggregate, GET /top-values/{field})
+- Index management endpoints (GET /indices/, GET /indices/{name}/stats, etc.)
+- All endpoints follow standard response format with proper error handling
+- Support for terms, date_histogram, stats, and cardinality aggregations
+
+**Test Coverage**:
+- Verifies all health check endpoints return correct status
+- Validates search functionality with various query types
+- Tests aggregation types (terms, date_histogram) with filters
+- Confirms index management operations (list, stats, mappings)
+- Validates error handling for invalid queries and non-existent indices
+- Ensures all responses follow the standard API response format
+
+---
+
 ## Example (For Reference)
 
 ### RT-001: OpenSearch Index Creation Race Condition
@@ -187,9 +220,9 @@ The regression test verifies that:
 
 | Category | Count |
 |----------|-------|
-| **Total Regression Tests** | 3 |
+| **Total Regression Tests** | 4 |
 | **Critical Severity** | 2 |
-| **High Severity** | 0 |
+| **High Severity** | 1 |
 | **Medium Severity** | 1 |
 | **Low Severity** | 0 |
 
@@ -313,4 +346,4 @@ class TestRegressionXXX:
 
 ---
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-04 (Updated: Added RT-004 Analytics API test)
