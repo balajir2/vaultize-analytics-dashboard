@@ -1,0 +1,83 @@
+{
+  "name": "High Error Rate",
+  "description": "Alert when error log count exceeds threshold in a time window",
+  "enabled": true,
+  "schedule": {
+    "interval": "5m"
+  },
+  "query": {
+    "index": ["logs-*"],
+    "time_field": "@timestamp",
+    "time_range": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "filter": {
+      "bool": {
+        "must": [
+          {
+            "match": {
+              "level": "ERROR"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "condition": {
+    "type": "threshold",
+    "operator": "gt",
+    "value": 100
+  },
+  "actions": [
+    {
+      "type": "webhook",
+      "name": "slack_notification",
+      "webhook": {
+        "url": "${ALERT_WEBHOOK_URL}",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "text": "🚨 High Error Rate Alert",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*High Error Rate Detected*\n\nError count: {{alert.result_count}}\nThreshold: {{alert.threshold}}\nTime: {{alert.timestamp}}"
+              }
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Environment:*\n{{alert.environment}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Service:*\n{{alert.service}}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "throttle": {
+    "value": 15,
+    "unit": "minutes"
+  },
+  "metadata": {
+    "severity": "high",
+    "category": "application",
+    "owner": "platform-team",
+    "runbook": "https://wiki.example.com/runbooks/high-error-rate",
+    "created_by": "Balaji Rajan",
+    "created_date": "2026-02-04",
+    "tags": ["errors", "production", "critical"]
+  }
+}

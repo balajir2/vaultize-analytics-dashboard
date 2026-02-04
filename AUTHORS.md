@@ -6,7 +6,7 @@ This file acknowledges the original authors and all contributors to the Vaultize
 
 ## Original Authors
 
-### [Your Name]
+### Balaji Rajan
 **Role**: Project Creator & Lead Developer
 **Contributions**:
 - Project conception and vision
@@ -78,7 +78,7 @@ Special thanks to:
 
 Current maintainers with commit access:
 
-- **[Your Name]** - Lead Maintainer
+- **Balaji Rajan** - Lead Maintainer
 
 _Additional maintainers will be added as the project grows._
 

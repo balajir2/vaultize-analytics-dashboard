@@ -58,7 +58,92 @@ What the regression test verifies
 
 ## Tests
 
-_No regression tests yet. This section will be populated as bugs are discovered and fixed._
+### RT-001: OpenSearch Node Config Must Not Contain Index-Level Settings
+
+**File**: `test_regression_001_opensearch_config_validation.py`
+**Date**: 2026-02-04
+**Severity**: Critical
+
+**Original Bug**:
+OpenSearch node configuration (opensearch.yml) contained index-level settings like `index.number_of_shards`, `index.number_of_replicas`, and slow log settings. This caused OpenSearch to fail startup with error: "node settings must not contain any index level settings"
+
+**How to Reproduce** (original bug):
+1. Add `index.number_of_shards: 3` to opensearch.yml
+2. Start OpenSearch container
+3. Container fails with IllegalArgumentException
+
+**Fix Applied**:
+- Removed all index-level settings from opensearch.yml
+- Moved them to index templates (configs/index-templates/logs-template.json)
+- Added documentation comments explaining where index settings belong
+- Also fixed HTTP header size limit (increased to 16kb)
+
+**Test Coverage**:
+- Verifies no forbidden index-level settings in node config
+- Verifies http.max_header_size is set to prevent header size errors
+
+---
+
+### RT-002: OpenSearch Dashboards Config Validation Errors
+
+**File**: `test_regression_002_opensearch_dashboards_config.py`
+**Date**: 2026-02-04
+**Severity**: Critical
+
+**Original Bug**:
+OpenSearch Dashboards configuration had multiple invalid settings:
+1. `server.basePath` set to empty string `""` causing "must start with a slash" error
+2. `server.cors.enabled` instead of `server.cors` causing "expected boolean got Object" error
+3. Unsupported config keys: `opensearch_security.*`, `telemetry.*` causing "Unknown configuration key" errors
+
+These caused container restart loops with validation errors.
+
+**How to Reproduce** (original bug):
+1. Set `server.basePath: ""` in opensearch_dashboards.yml
+2. Set `server.cors.enabled: false`
+3. Add `opensearch_security.auth.type: ""`
+4. Start Dashboards container
+5. Container fails with config validation errors
+
+**Fix Applied**:
+- Commented out server.basePath (use default)
+- Changed `server.cors.enabled` to `server.cors: false`
+- Removed all `opensearch_security.*` and `telemetry.*` keys
+
+**Test Coverage**:
+- Verifies server.basePath is not set to empty string
+- Verifies server.cors is boolean, not object
+- Verifies no unsupported security and telemetry keys
+
+---
+
+### RT-003: Docker Compose Hardcoded Ports
+
+**File**: `test_regression_003_docker_compose_ports.py`
+**Date**: 2026-02-04
+**Severity**: Medium
+
+**Original Bug**:
+Docker Compose had hardcoded ports instead of using environment variables. This made it impossible to change ports without editing docker-compose.yml. Example: Grafana port was hardcoded as `"3000:3000"` instead of `"${GRAFANA_PORT:-3000}:3000"`
+
+**How to Reproduce** (original bug):
+1. Try to change Grafana port by setting `GRAFANA_PORT=3100` in .env
+2. Run `docker compose up -d`
+3. Grafana still binds to port 3000 (hardcoded value ignored environment variable)
+
+**Fix Applied**:
+Updated all port mappings in docker-compose.yml to use environment variables with defaults:
+- OpenSearch: `${OPENSEARCH_PORT:-9200}`
+- Dashboards: `${OPENSEARCH_DASHBOARDS_PORT:-5601}`
+- Prometheus: `${PROMETHEUS_PORT:-9090}`
+- Grafana: `${GRAFANA_PORT:-3000}`
+- Fluent Bit: `${FLUENT_BIT_FORWARD_PORT:-24224}`
+- Analytics API: `${API_PORT:-8000}`
+
+**Test Coverage**:
+- Verifies no hardcoded port mappings exist
+- Verifies all port variables have default values
+- Verifies common service ports are configurable
 
 ---
 
@@ -102,10 +187,10 @@ The regression test verifies that:
 
 | Category | Count |
 |----------|-------|
-| **Total Regression Tests** | 0 |
-| **Critical Severity** | 0 |
+| **Total Regression Tests** | 3 |
+| **Critical Severity** | 2 |
 | **High Severity** | 0 |
-| **Medium Severity** | 0 |
+| **Medium Severity** | 1 |
 | **Low Severity** | 0 |
 
 ---

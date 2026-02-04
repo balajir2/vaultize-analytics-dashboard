@@ -2,7 +2,7 @@
 
 ## Vaultize Analytics Platform
 
-**Copyright © 2026 [Your Name] and Claude (Anthropic)**
+**Copyright © 2026 Balaji Rajan and Claude (Anthropic)**
 
 ---
 
@@ -266,7 +266,7 @@ This software integrates with and depends on the following third-party open-sour
 ## Authors and Contributors
 
 **Original Authors**:
-- **[Your Name]** - Project creator and lead developer
+- **Balaji Rajan** - Project creator and lead developer
 - **Claude (Anthropic)** - AI co-author and development assistant
 
 **How to Contribute**:

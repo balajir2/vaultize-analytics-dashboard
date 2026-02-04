@@ -243,7 +243,7 @@ Special thanks to the entire open-source community.
 ## Authors
 
 **Original Authors**:
-- **[Your Name]** - Project Creator & Lead Developer
+- **Balaji Rajan** - Project Creator & Lead Developer
 - **Claude (Anthropic)** - AI Co-Author & Development Assistant
 
 See [AUTHORS.md](AUTHORS.md) for complete contributor list.
@@ -295,7 +295,7 @@ See [SECURITY.md](SECURITY.md) for our security policy.
 
 <div align="center">
 
-**Copyright © 2026 [Your Name] and Claude (Anthropic)**
+**Copyright © 2026 Balaji Rajan and Claude (Anthropic)**
 
 Licensed under Apache License 2.0 | [Documentation](docs/) | [Contributing](CONTRIBUTING.md) | [License](LICENSE.md)
 

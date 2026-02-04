@@ -1,8 +1,33 @@
+# Vaultize Analytics Platform - Git Ignore File
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+# ============================================================================
+# Environment and Secrets
+# ============================================================================
+
+.env
+.env.local
+.env.production
+.env.*.local
+*.secret
+secrets/
+.secrets/
+
+# ============================================================================
 # Python
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -16,9 +41,29 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
 
 # Virtual environments
 venv/
@@ -26,48 +71,193 @@ ENV/
 env/
 .venv/
 
-# IDE
-.idea/
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+
+# VS Code
 .vscode/
+!.vscode/settings.json.example
+!.vscode/extensions.json.example
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
 *~
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
+# Emacs
+*~
+\#*\#
+.\#*
 
-# Logs
-*.log
-logs/
+# ============================================================================
+# Operating System Files
+# ============================================================================
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
 
-# Docker
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ============================================================================
+# Docker and Containers
+# ============================================================================
+
+# Docker volumes (data directories)
+opensearch-data/
+prometheus-data/
+grafana-data/
+fluent-bit-storage/
+
+# Docker overrides
 docker-compose.override.yml
 
-# OpenSearch data (local dev)
-opensearch-data/
-data/
+# ============================================================================
+# Logs and Temporary Files
+# ============================================================================
 
-# Secrets (never commit)
-secrets/
+# Log files
+*.log
+logs/
+*.out
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# ============================================================================
+# OpenSearch / Elasticsearch
+# ============================================================================
+
+# OpenSearch data directories (if running locally)
+data/
+opensearch/data/
+.opensearch/
+
+# Snapshots
+snapshots/
+
+# ============================================================================
+# Build Artifacts
+# ============================================================================
+
+# Compiled binaries
+*.exe
+*.dll
+*.dylib
+
+# Build directories
+target/
+out/
+
+# ============================================================================
+# Testing
+# ============================================================================
+
+# Test output
+.pytest_cache/
+test-results/
+test-reports/
+
+# ============================================================================
+# Documentation
+# ============================================================================
+
+# Generated documentation
+docs/_build/
+site/
+
+# ============================================================================
+# Node.js (if using for tooling)
+# ============================================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================================================
+# Database Files
+# ============================================================================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================================================
+# Certificates and Keys
+# ============================================================================
+
+# SSL/TLS certificates
 *.pem
 *.key
 *.crt
+*.csr
+*.p12
+*.pfx
+certs/
 
-# OS files
-.DS_Store
-Thumbs.db
+# SSH keys
+*.pub
+id_rsa
+id_ed25519
 
-# Temp files
-*.tmp
-*.temp
-tmp/
-temp/
+# ============================================================================
+# Backup Files
+# ============================================================================
+
+*.backup
+*.bak
+*~
+
+# ============================================================================
+# Project-Specific
+# ============================================================================
+
+# Fluent Bit database
+flb_*.db
+
+# Local configuration overrides
+config.local.yml
+config.override.yml
+
+# Downloaded dependencies
+vendor/
+
+# ============================================================================
+# Keep These Files
+# ============================================================================
+
+# Force include example files
+!.env.example
+!config.example.yml
+!docker-compose.example.yml
+
+# Force include README files in empty directories
+!**/README.md
+!**/.gitkeep

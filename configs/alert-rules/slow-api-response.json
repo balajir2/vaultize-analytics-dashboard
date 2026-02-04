@@ -1,0 +1,77 @@
+{
+  "name": "Slow API Response Time",
+  "description": "Alert when 95th percentile API response time exceeds threshold",
+  "enabled": true,
+  "schedule": {
+    "interval": "5m"
+  },
+  "query": {
+    "index": ["logs-*"],
+    "time_field": "@timestamp",
+    "time_range": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "filter": {
+      "bool": {
+        "must": [
+          {
+            "exists": {
+              "field": "http.response_time_ms"
+            }
+          }
+        ]
+      }
+    },
+    "aggregation": {
+      "percentiles": {
+        "field": "http.response_time_ms",
+        "percents": [95]
+      }
+    }
+  },
+  "condition": {
+    "type": "threshold",
+    "aggregation_field": "percentiles.95.0",
+    "operator": "gt",
+    "value": 1000
+  },
+  "actions": [
+    {
+      "type": "webhook",
+      "name": "performance_alert",
+      "webhook": {
+        "url": "${ALERT_WEBHOOK_URL}",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "text": "⚠️ Slow API Response Time Alert",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Slow API Response Detected*\n\nP95 Response Time: {{alert.p95_response_time}}ms\nThreshold: {{alert.threshold}}ms\nTime: {{alert.timestamp}}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "throttle": {
+    "value": 10,
+    "unit": "minutes"
+  },
+  "metadata": {
+    "severity": "medium",
+    "category": "performance",
+    "owner": "api-team",
+    "runbook": "https://wiki.example.com/runbooks/slow-api",
+    "created_by": "Balaji Rajan",
+    "created_date": "2026-02-04",
+    "tags": ["performance", "api", "latency"]
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "index_patterns": ["logs-*"],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": 3,
+        "number_of_replicas": 1,
+        "refresh_interval": "5s",
+        "codec": "best_compression",
+        "max_result_window": 10000,
+
+        "lifecycle": {
+          "name": "logs-lifecycle-policy",
+          "rollover_alias": "logs"
+        },
+
+        "mapping": {
+          "total_fields": {
+            "limit": 2000
+          }
+        },
+
+        "analysis": {
+          "analyzer": {
+            "message_analyzer": {
+              "type": "standard",
+              "stopwords": "_english_"
+            }
+          }
+        }
+      }
+    },
+
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date",
+          "format": "strict_date_optional_time||epoch_millis"
+        },
+        "timestamp": {
+          "type": "date",
+          "format": "strict_date_optional_time||epoch_millis"
+        },
+        "level": {
+          "type": "keyword"
+        },
+        "log_level": {
+          "type": "keyword"
+        },
+        "severity": {
+          "type": "keyword"
+        },
+        "message": {
+          "type": "text",
+          "analyzer": "message_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "service": {
+          "type": "keyword"
+        },
+        "service_name": {
+          "type": "keyword"
+        },
+        "application": {
+          "type": "keyword"
+        },
+        "host": {
+          "type": "keyword"
+        },
+        "hostname": {
+          "type": "keyword"
+        },
+        "environment": {
+          "type": "keyword"
+        },
+        "source": {
+          "type": "keyword"
+        },
+        "logger": {
+          "type": "keyword"
+        },
+        "thread": {
+          "type": "keyword"
+        },
+        "trace_id": {
+          "type": "keyword"
+        },
+        "span_id": {
+          "type": "keyword"
+        },
+        "correlation_id": {
+          "type": "keyword"
+        },
+        "user_id": {
+          "type": "keyword"
+        },
+        "request_id": {
+          "type": "keyword"
+        },
+        "session_id": {
+          "type": "keyword"
+        },
+        "ip_address": {
+          "type": "ip"
+        },
+        "client_ip": {
+          "type": "ip"
+        },
+        "remote_addr": {
+          "type": "ip"
+        },
+        "error": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            },
+            "message": {
+              "type": "text"
+            },
+            "stack_trace": {
+              "type": "text",
+              "index": false
+            }
+          }
+        },
+        "exception": {
+          "properties": {
+            "class": {
+              "type": "keyword"
+            },
+            "message": {
+              "type": "text"
+            },
+            "stacktrace": {
+              "type": "text",
+              "index": false
+            }
+          }
+        },
+        "http": {
+          "properties": {
+            "method": {
+              "type": "keyword"
+            },
+            "path": {
+              "type": "keyword"
+            },
+            "status_code": {
+              "type": "integer"
+            },
+            "response_time_ms": {
+              "type": "long"
+            },
+            "user_agent": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "referer": {
+              "type": "keyword"
+            }
+          }
+        },
+        "tags": {
+          "type": "keyword"
+        },
+        "labels": {
+          "type": "object",
+          "dynamic": true
+        },
+        "metadata": {
+          "type": "object",
+          "dynamic": true
+        },
+        "kubernetes": {
+          "properties": {
+            "namespace": {
+              "type": "keyword"
+            },
+            "pod_name": {
+              "type": "keyword"
+            },
+            "container_name": {
+              "type": "keyword"
+            },
+            "labels": {
+              "type": "object",
+              "dynamic": true
+            }
+          }
+        },
+        "docker": {
+          "properties": {
+            "container_id": {
+              "type": "keyword"
+            },
+            "container_name": {
+              "type": "keyword"
+            },
+            "image": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    },
+
+    "aliases": {
+      "logs-all": {}
+    }
+  },
+
+  "priority": 100,
+  "version": 1,
+  "_meta": {
+    "description": "Index template for application and system logs",
+    "managed_by": "vaultize-analytics",
+    "authors": "Balaji Rajan and Claude (Anthropic)",
+    "created_date": "2026-02-04"
+  }
+}

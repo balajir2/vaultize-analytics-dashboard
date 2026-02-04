@@ -1,0 +1,123 @@
+# OpenSearch Configuration
+#
+# This configuration is used by all OpenSearch nodes in the cluster.
+# Node-specific settings are provided via environment variables in docker-compose.yml
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+# ============================================================================
+# Cluster Settings
+# ============================================================================
+
+# Cluster name (set via environment variable)
+# cluster.name: vaultize-cluster
+
+# Node name (set via environment variable)
+# node.name: opensearch-node-1
+
+# ============================================================================
+# Network Settings
+# ============================================================================
+
+network.host: 0.0.0.0
+network.bind_host: 0.0.0.0
+network.publish_host: _eth0_
+
+http.port: 9200
+http.max_header_size: 16kb  # Increased from default 8kb to handle larger headers
+transport.port: 9300
+
+# ============================================================================
+# Discovery and Cluster Formation
+# ============================================================================
+
+# Seed hosts for cluster discovery (set via environment variable)
+# discovery.seed_hosts: [opensearch-node-1, opensearch-node-2, opensearch-node-3]
+
+# Initial cluster manager nodes (set via environment variable)
+# cluster.initial_cluster_manager_nodes: [opensearch-node-1, opensearch-node-2, opensearch-node-3]
+
+# ============================================================================
+# Node Roles
+# ============================================================================
+
+# All nodes are cluster_manager and data nodes
+node.roles: [ cluster_manager, data, ingest ]
+
+# ============================================================================
+# Memory and Storage
+# ============================================================================
+
+# Bootstrap memory lock (set via environment variable)
+# bootstrap.memory_lock: true
+
+# Path settings
+path.data: /usr/share/opensearch/data
+path.logs: /usr/share/opensearch/logs
+
+# ============================================================================
+# Index Settings
+# ============================================================================
+
+# Automatic index creation
+action.auto_create_index: true
+
+# NOTE: index.number_of_shards and index.number_of_replicas are defined
+# in index templates (configs/index-templates/logs-template.json)
+# and should NOT be set here as node-level settings
+
+# ============================================================================
+# Performance Tuning
+# ============================================================================
+
+# Thread pools
+thread_pool.write.queue_size: 1000
+thread_pool.search.queue_size: 1000
+
+# Circuit breakers
+indices.breaker.total.limit: 70%
+indices.breaker.fielddata.limit: 40%
+indices.breaker.request.limit: 40%
+
+# ============================================================================
+# Security Settings (DISABLED for development)
+# ============================================================================
+
+# TODO: Enable security in production
+# plugins.security.disabled: false
+# plugins.security.ssl.transport.enabled: true
+# plugins.security.ssl.http.enabled: true
+
+# For now, security is disabled (DISABLE_SECURITY_PLUGIN=true in docker-compose.yml)
+
+# ============================================================================
+# Logging
+# ============================================================================
+
+logger.level: INFO
+
+# NOTE: Slow log settings (index.search.slowlog.*, index.indexing.slowlog.*)
+# are index-level settings and should be defined in index templates
+# (configs/index-templates/logs-template.json), NOT here as node-level settings
+
+# ============================================================================
+# Cluster Recovery
+# ============================================================================
+
+# Wait for N nodes before recovering
+gateway.recover_after_nodes: 2
+
+# Expected nodes in the cluster
+gateway.expected_nodes: 3
+
+# Recovery settings
+cluster.routing.allocation.node_concurrent_recoveries: 2
+indices.recovery.max_bytes_per_sec: 40mb
+
+# ============================================================================
+# Other Settings
+# ============================================================================
+
+# Compatibility mode (for Elasticsearch clients)
+compatibility.override_main_response_version: true

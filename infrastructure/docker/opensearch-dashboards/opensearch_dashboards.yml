@@ -1,0 +1,68 @@
+# OpenSearch Dashboards Configuration
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+# ============================================================================
+# Server Settings
+# ============================================================================
+
+server.host: "0.0.0.0"
+server.port: 5601
+server.name: "vaultize-dashboards"
+# server.basePath: ""  # Commented out - use default (no base path)
+server.rewriteBasePath: false
+
+# ============================================================================
+# OpenSearch Connection
+# ============================================================================
+
+opensearch.hosts: ["http://opensearch-node-1:9200"]
+opensearch.requestTimeout: 30000
+opensearch.pingTimeout: 3000
+
+# ============================================================================
+# Security Settings (DISABLED for development)
+# ============================================================================
+
+# TODO: Enable security in production
+# opensearch.username: "admin"
+# opensearch.password: "admin"
+# opensearch.ssl.verificationMode: none
+
+# Security plugins disabled (see docker-compose.yml DISABLE_SECURITY_PLUGIN=true)
+
+# ============================================================================
+# Logging
+# ============================================================================
+
+logging.dest: stdout
+logging.silent: false
+logging.quiet: false
+logging.verbose: false
+
+# ============================================================================
+# UI Settings
+# ============================================================================
+
+# Default index pattern
+# opensearchDashboards.defaultAppId: "discover"
+
+# Telemetry configuration keys removed - not supported in this version
+
+# ============================================================================
+# Advanced Settings
+# ============================================================================
+
+# CORS configuration (false = disabled)
+server.cors: false
+
+# Maximum payload size
+server.maxPayloadBytes: 1048576
+
+# ============================================================================
+# Saved Objects
+# ============================================================================
+
+# Import saved objects on startup (if configured)
+# savedObjects.maxImportPayloadBytes: 26214400
