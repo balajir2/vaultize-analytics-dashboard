@@ -51,23 +51,26 @@ function Import-SavedObjects {
         $boundary = [System.Guid]::NewGuid().ToString()
         $LF = "`r`n"
 
-        $bodyLines = (
-            "--$boundary",
-            "Content-Disposition: form-data; name=`"file`"; filename=`"$name.ndjson`"",
-            "Content-Type: application/ndjson$LF",
-            $fileContent,
+        $bodyLines = @(
+            "--$boundary"
+            "Content-Disposition: form-data; name=`"file`"; filename=`"$name.ndjson`""
+            "Content-Type: application/ndjson$LF"
+            $fileContent
             "--$boundary--$LF"
         ) -join $LF
 
-        # Make request
-        $response = Invoke-WebRequest `
-            -Uri "$DashboardsUrl/api/saved_objects/_import?overwrite=true" `
-            -Method Post `
-            -ContentType "multipart/form-data; boundary=$boundary" `
-            -Body $bodyLines `
-            -Headers @{ "osd-xsrf" = "true" } `
-            -UseBasicParsing `
-            -ErrorAction Stop
+        # Make request using splatting
+        $requestParams = @{
+            Uri = "$DashboardsUrl/api/saved_objects/_import?overwrite=true"
+            Method = 'Post'
+            ContentType = "multipart/form-data; boundary=$boundary"
+            Body = $bodyLines
+            Headers = @{ "osd-xsrf" = "true" }
+            UseBasicParsing = $true
+            ErrorAction = 'Stop'
+        }
+
+        $response = Invoke-WebRequest @requestParams
 
         Write-Host "SUCCESS" -ForegroundColor Green
 
@@ -77,7 +80,6 @@ function Import-SavedObjects {
             $count = if ($result.successCount) { $result.successCount } else { 1 }
             Write-Host "  └─ Imported $count objects" -ForegroundColor Gray
         }
-
     } catch {
         Write-Host "FAILED" -ForegroundColor Red
         Write-Host "  └─ Error: $($_.Exception.Message)" -ForegroundColor Red
@@ -89,8 +91,8 @@ Write-Host "Importing saved objects..." -ForegroundColor Cyan
 Write-Host ""
 
 $files = @(
-    "index-pattern.ndjson",
-    "visualizations.ndjson",
+    "index-pattern.ndjson"
+    "visualizations.ndjson"
     "dashboards.ndjson"
 )
 

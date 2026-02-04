@@ -24,24 +24,32 @@ docker compose ps  # Verify all services are "Up (healthy)"
 **URL**: http://localhost:5601
 
 ### Step 1: Create Index Pattern
-1. Open http://localhost:5601
-2. Click hamburger menu (☰) → Management
-3. Look for "Index Patterns" or "Index Management"
-   - **If you see "Index Patterns"**: Click it directly
-   - **If you see "Dashboards Management"**: Click it, then find "Index Patterns"
-4. Click "Create index pattern" button
-5. Enter index pattern: `logs-*`
-6. Click "Next step" (or "Next" button)
-7. Select time field: `@timestamp`
-8. Click "Create index pattern"
 
-**Alternative path** (if above doesn't work):
-- Try: ☰ → Dashboards Management → Index Patterns → Create index pattern
+**IMPORTANT**: We need "Index Patterns" (NOT "Index Management" - that's different!)
+
+**Correct Navigation**:
+1. Open http://localhost:5601
+2. Click the **hamburger menu** (☰) at top left
+3. Scroll down to **"Management"** section (with gear icon ⚙)
+4. Click **"Dashboards Management"**
+5. Click **"Index Patterns"**
+6. Click **"Create index pattern"** button
+7. Enter index pattern: `logs-*`
+8. Click "Next step" button
+9. Select time field: `@timestamp`
+10. Click "Create index pattern"
+
+**⚠️ Note**: Don't click "Index Management" - that's for ISM policies, not for viewing logs!
 
 ### Step 2: Discover Your Logs
-1. Click hamburger menu → Analytics → Discover
-2. You should see 1,000+ sample logs!
-3. **Try these filters**:
+
+**Navigate to Discover:**
+- **Option 1**: Direct URL: http://localhost:5601/app/discover
+- **Option 2**: Look in hamburger menu for "Discover" (may be under "OpenSearch Dashboards" or "Observability" section)
+
+**Once in Discover:**
+1. You should see 1,000+ sample logs!
+2. **Try these filters**:
    - Click on `level` field → Select "ERROR" (see only errors)
    - Click on `service` field → Select "api-service"
    - Change time range (top right) to "Last 7 days"
@@ -191,14 +199,139 @@ status_code:500
 1. Open http://localhost:3100
 2. Login with admin/admin
 3. Set new password (or skip)
-4. Explore default dashboards (left menu → Dashboards)
-5. View system metrics (CPU, memory, disk)
+4. You'll see Grafana welcome screen
 
-**✅ Expected**: See Prometheus metrics visualized
+**✅ Expected**: Grafana loads successfully and you can login
+
+**Note**: Grafana is running but dashboards are not pre-configured. This is for future metrics visualization (optional M4 feature). For log analytics, use OpenSearch Dashboards instead.
 
 ---
 
-## 💻 Test 4: Command Line (Optional - For Tech Users)
+## 📊 Test 4: M4 Dashboards (Pre-built Analytics Dashboards)
+
+**Goal**: Import and test the pre-built Operations and Analytics dashboards
+
+### Step 1: Import Dashboards Automatically
+
+**Windows (PowerShell)**:
+```powershell
+cd "d:\GitHub\Vaultize Analytics Dashboard\dashboards\opensearch-dashboards"
+.\import_dashboards.ps1
+```
+
+**Expected Output**:
+```
+==========================================
+OpenSearch Dashboards Import Script
+==========================================
+Checking OpenSearch Dashboards connectivity... OK
+
+Importing index-pattern... SUCCESS
+Importing visualizations... SUCCESS
+Importing dashboards... SUCCESS
+
+Import Complete!
+```
+
+### Step 2: Access Operations Dashboard
+
+**URL**: http://localhost:5601/app/dashboards
+
+1. Navigate to Dashboards (hamburger menu → Dashboard)
+2. Click **"Operations Dashboard"**
+
+**What You Should See**:
+- **Log Volume Over Time**: Line chart showing log activity
+- **Log Level Distribution**: Pie chart (DEBUG, INFO, WARN, ERROR, FATAL)
+- **Top Services**: Bar chart of most active services
+- **Error Rate by Service**: Multi-line chart tracking errors
+- **Recent Critical Events**: Table of recent ERROR/FATAL logs
+
+**Dashboard Features**:
+- Auto-refresh: Every 30 seconds
+- Time range: Last 24 hours (adjustable)
+- Click on charts to filter data
+- Use search bar to query logs
+
+### Step 3: Access Analytics Dashboard
+
+**URL**: http://localhost:5601/app/dashboards
+
+1. From Dashboards list, click **"Analytics Dashboard"**
+
+**What You Should See**:
+- **Full-width Log Volume Timeline**: Historical log activity
+- **Log Level Breakdown**: Severity distribution
+- **Service Activity Analysis**: Which services log most
+- **Top Error Messages**: Table of common errors by service
+- **Service Error Trends**: Comparison of error rates
+
+**Dashboard Features**:
+- Manual refresh (for investigation)
+- Time range: Last 7 days (adjustable)
+- Drill-down by clicking visualizations
+- Export/share capabilities
+
+### Step 4: Test Dashboard Interactions
+
+**Try these interactions**:
+
+1. **Filter by clicking**:
+   - Click on "ERROR" slice in pie chart
+   - Notice all panels now show only errors
+   - Clear filter by clicking the "x" on the filter pill
+
+2. **Adjust time range**:
+   - Click time picker (top right)
+   - Select "Last 15 minutes"
+   - Notice data updates across all panels
+
+3. **Search within dashboard**:
+   - Use search bar: `service:api-service`
+   - See data filtered to only api-service
+
+4. **View panel details**:
+   - Hover over any chart
+   - Click the expand icon to see full-screen
+   - Click inspect to see raw data
+
+### Step 5: Verify All Visualizations Work
+
+**Check each visualization loads**:
+- [ ] Log Volume Over Time (line chart)
+- [ ] Log Level Distribution (pie chart)
+- [ ] Top Services (bar chart)
+- [ ] Error Rate by Service (multi-line chart)
+- [ ] Recent Critical Events (data table)
+- [ ] Top Error Messages (data table)
+
+**✅ Success Criteria**:
+- Both dashboards load without errors
+- All visualizations display data
+- Filters and time range selectors work
+- Can drill down into data
+- Charts are interactive (hover, click)
+
+### Troubleshooting M4 Dashboards
+
+**Dashboard shows "No data"**:
+- Check index pattern exists: `logs-*`
+- Verify time range includes your sample data
+- Confirm logs are indexed: http://localhost:9200/logs-*/_count
+
+**Import script failed**:
+- Verify OpenSearch Dashboards is running: http://localhost:5601
+- Check logs: `docker compose logs opensearch-dashboards`
+- Try manual import via UI (Management → Saved Objects → Import)
+
+**Visualizations not loading**:
+- Refresh browser (Ctrl+F5)
+- Check browser console (F12) for errors
+- Verify all services healthy: `docker compose ps`
+
+---
+
+## 💻 Test 5: Command Line (Optional - For Tech Users)
 
 ### Health Check
 ```bash
