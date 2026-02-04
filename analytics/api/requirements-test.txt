@@ -1,0 +1,37 @@
+# Testing Dependencies for Analytics API
+#
+# Install with: pip install -r requirements-test.txt
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+# ============================================================================
+# Testing Framework
+# ============================================================================
+
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# ============================================================================
+# FastAPI Testing
+# ============================================================================
+
+httpx==0.25.0  # For async test client
+starlette==0.27.0  # TestClient dependency
+
+# ============================================================================
+# Code Coverage
+# ============================================================================
+
+coverage[toml]==7.3.2
+
+# ============================================================================
+# Code Quality
+# ============================================================================
+
+black==23.11.0  # Code formatting
+flake8==6.1.0  # Linting
+mypy==1.7.0  # Type checking
+isort==5.12.0  # Import sorting
