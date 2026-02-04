@@ -1,6 +1,8 @@
 # Vaultize Analytics - Manual Testing Guide
 
 **Last Updated**: 2026-02-04
+**Authors**: Balaji Rajan and Claude (Anthropic)
+**License**: Apache 2.0
 **System Status**: Fully Operational ✅
 
 ---

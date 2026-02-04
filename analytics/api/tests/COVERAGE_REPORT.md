@@ -1,6 +1,8 @@
 # Test Coverage Report - Analytics API
 
 **Generated**: 2026-02-04
+**Authors**: Balaji Rajan and Claude (Anthropic)
+**License**: Apache 2.0
 **Overall Coverage**: 89%
 **Status**: ✅ EXCEEDS CLAUDE.MD REQUIREMENT (>80%)
 

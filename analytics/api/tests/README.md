@@ -1,5 +1,8 @@
 # Analytics API Tests
 
+**Authors**: Balaji Rajan and Claude (Anthropic)
+**License**: Apache 2.0
+
 Comprehensive test suite for the Analytics API including unit tests and integration tests.
 
 ## Test Structure
