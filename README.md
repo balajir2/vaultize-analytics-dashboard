@@ -87,13 +87,22 @@ For detailed architecture, see [Architecture Documentation](docs/architecture/RE
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| **Search & Analytics** | OpenSearch 2.x | Core search engine and log storage |
-| **Visualization** | OpenSearch Dashboards | Primary UI for search and dashboards |
-| **Log Ingestion** | Fluent Bit | Lightweight log collection |
-| **Metrics** | Prometheus | System and application metrics (optional) |
-| **Unified Dashboards** | Grafana | Combined logs + metrics view (optional) |
-| **API Services** | Python 3.11 + FastAPI | RESTful API and alerting |
-| **Deployment** | Docker + Docker Compose | Container orchestration |
+| **Search & Analytics** | OpenSearch 2.11 | Core engine - stores, indexes, and queries log data with full-text search and aggregations |
+| **Visualization** | OpenSearch Dashboards 2.11 | Primary UI - interactive dashboards, log discovery, and visualizations |
+| **Log Ingestion** | Fluent Bit 2.2 | Lightweight collector - parses logs from files, syslog, Docker and forwards to OpenSearch |
+| **Metrics** | Prometheus 2.48 | Time-series database for system metrics and application performance (optional) |
+| **Unified Dashboards** | Grafana 10.2 | Combined logs + metrics visualization with alerting capabilities (optional) |
+| **API Services** | Python 3.11 + FastAPI | RESTful API - programmatic access to search, aggregations, and index management |
+| **Deployment** | Docker + Docker Compose | Container orchestration - single-command deployment of entire stack |
+
+### Why These Technologies?
+
+| Choice | Rationale |
+|--------|-----------|
+| **OpenSearch over Elasticsearch** | Truly open-source (Apache 2.0), no licensing concerns, active community |
+| **Fluent Bit over Logstash** | 10x lighter (~450KB vs ~1GB), written in C, minimal resource footprint |
+| **FastAPI over Flask/Django** | Modern async support, automatic OpenAPI docs, Pydantic validation |
+| **Docker Compose over Kubernetes** | Simpler for on-prem, faster iteration, sufficient for 100K logs/sec |
 
 See [Technology Stack](docs/architecture/tech-stack.md) for complete details.
 
@@ -111,21 +120,76 @@ See [Technology Stack](docs/architecture/tech-stack.md) for complete details.
 
 ## Project Status
 
-**Current Version**: 0.1.0 (Alpha)
-**Status**: In Development
+**Current Version**: 0.3.0 (Alpha)
+**Status**: In Active Development
+**Overall Progress**: ~65% Complete
 
 See [MILESTONES.md](MILESTONES.md) for roadmap and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ### Milestone Progress
 
-- ✅ M0: Project Scaffold (10%)
-- ⚪ M1: Infrastructure Layer (0%)
-- ⚪ M2: Ingestion Pipeline (0%)
-- ⚪ M3: Analytics Services (0%)
-- ⚪ M4: Dashboards (0%)
-- ⚪ M5: Alerting (0%)
-- ⚪ M6: Testing & Documentation (0%)
-- ⚪ M7: Production Hardening (0%)
+```
+M0: Project Scaffold        [####################] 100%  Complete
+M1: Infrastructure Layer    [##################--]  90%  In Progress
+M2: Ingestion Pipeline      [################----]  80%  In Progress
+M3: Analytics Services      [###################-]  95%  Complete
+M4: Dashboards              [###################-]  95%  Complete
+M5: Alerting System         [--------------------]   0%  Not Started
+M6: Testing & Documentation [###############-----]  75%  In Progress
+M7: Production Hardening    [--------------------]   0%  Not Started
+```
+
+| Milestone | Status | Highlights |
+|-----------|--------|------------|
+| **M0: Project Scaffold** | Complete | Directory structure, documentation, session continuity |
+| **M1: Infrastructure** | 90% | Docker Compose stack, 3-node OpenSearch cluster, all configs |
+| **M2: Ingestion** | 80% | Fluent Bit with 4 parsers, multi-source support |
+| **M3: Analytics API** | 95% | 14 REST endpoints, 89% test coverage, sample data generator |
+| **M4: Dashboards** | 95% | 2 pre-built dashboards, 6 visualizations, import scripts |
+| **M5: Alerting** | 0% | Not started |
+| **M6: Testing & Docs** | 75% | 74 unit tests passing, comprehensive documentation |
+| **M7: Production** | 0% | Not started |
+
+---
+
+## What Remains
+
+### High Priority (Required for MVP)
+
+| Task | Milestone | Effort |
+|------|-----------|--------|
+| Bootstrap scripts for cluster initialization | M1 | Small |
+| Health check automation scripts | M1 | Small |
+| Sample log generators for testing | M2 | Small |
+| Alerting service (rule engine, webhooks) | M5 | Large |
+| E2E tests for complete log flow | M6 | Medium |
+
+### Medium Priority (Quality & Polish)
+
+| Task | Milestone | Effort |
+|------|-----------|--------|
+| Ingestion monitoring dashboards | M2 | Medium |
+| API authentication/authorization | M7 | Medium |
+| Integration tests for ingestion pipeline | M6 | Medium |
+| Operations guide (troubleshooting, maintenance) | M6 | Medium |
+| Grafana dashboards for metrics | M4 | Small |
+
+### Lower Priority (Production Hardening)
+
+| Task | Milestone | Effort |
+|------|-----------|--------|
+| SSL/TLS configuration | M7 | Medium |
+| Role-based access control (RBAC) | M7 | Medium |
+| Backup and restore procedures | M7 | Medium |
+| Performance tuning documentation | M7 | Small |
+| Kubernetes deployment manifests | M7 | Large |
+
+### Deferred (Post-MVP)
+
+- Vector search integration
+- ML-based anomaly detection
+- Kafka ingestion buffering
+- Multi-tenancy support
 
 ---
 
@@ -254,19 +318,20 @@ See [AUTHORS.md](AUTHORS.md) for complete contributor list.
 
 **v1.0 Goals** (MVP):
 - ✅ Project structure and documentation
-- 🔄 Docker Compose deployment
-- 🔄 OpenSearch cluster setup
-- 🔄 Fluent Bit log ingestion
-- 🔄 Analytics API
-- 🔄 Alerting system
-- 🔄 Pre-built dashboards
+- ✅ Docker Compose deployment (3-node OpenSearch cluster)
+- ✅ OpenSearch cluster with index templates and ILM
+- ✅ Fluent Bit log ingestion (4 parser types)
+- ✅ Analytics API (14 endpoints, 89% test coverage)
+- ✅ Pre-built dashboards (Operations + Analytics)
+- 🔄 Alerting system (in progress)
+- 🔄 Production hardening (SSL, auth, backups)
 
 **Post-v1.0**:
-- Kubernetes deployment
-- Advanced alerting (ML-based)
+- Kubernetes deployment manifests
+- Advanced alerting (ML-based anomaly detection)
 - Vector search capabilities
 - Multi-tenancy support
-- Kafka integration
+- Kafka ingestion buffering
 
 See [MILESTONES.md](MILESTONES.md) for detailed roadmap.
 

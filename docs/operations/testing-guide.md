@@ -3,11 +3,11 @@
 **Last Updated**: 2026-02-04
 **Authors**: Balaji Rajan and Claude (Anthropic)
 **License**: Apache 2.0
-**System Status**: Fully Operational ✅
+**System Status**: Fully Operational
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Start All Services
 
@@ -19,7 +19,7 @@ docker compose ps  # Verify all services are "Up (healthy)"
 
 ---
 
-## 📊 Test 1: OpenSearch Dashboards (5-10 minutes)
+## Test 1: OpenSearch Dashboards (5-10 minutes)
 
 **URL**: http://localhost:5601
 
@@ -29,8 +29,8 @@ docker compose ps  # Verify all services are "Up (healthy)"
 
 **Correct Navigation**:
 1. Open http://localhost:5601
-2. Click the **hamburger menu** (☰) at top left
-3. Scroll down to **"Management"** section (with gear icon ⚙)
+2. Click the **hamburger menu** at top left
+3. Scroll down to **"Management"** section (with gear icon)
 4. Click **"Dashboards Management"**
 5. Click **"Index Patterns"**
 6. Click **"Create index pattern"** button
@@ -39,7 +39,7 @@ docker compose ps  # Verify all services are "Up (healthy)"
 9. Select time field: `@timestamp`
 10. Click "Create index pattern"
 
-**⚠️ Note**: Don't click "Index Management" - that's for ISM policies, not for viewing logs!
+**Note**: Don't click "Index Management" - that's for ISM policies, not for viewing logs!
 
 ### Step 2: Discover Your Logs
 
@@ -74,14 +74,14 @@ status_code:500
 6. Click "Add" under "Buckets"
 7. Select "Terms"
 8. Field: `level.keyword`
-9. Click "Update" (▶ button)
+9. Click "Update" button
 10. See your log level distribution!
 
-**✅ Expected Result**: Beautiful pie chart showing DEBUG, INFO, WARN, ERROR, FATAL distribution
+**Expected Result**: Beautiful pie chart showing DEBUG, INFO, WARN, ERROR, FATAL distribution
 
 ---
 
-## 🔌 Test 2: Analytics API (10-15 minutes)
+## Test 2: Analytics API (10-15 minutes)
 
 **URL**: http://localhost:8000/docs (Interactive Swagger UI)
 
@@ -91,7 +91,7 @@ status_code:500
 3. Click "Try it out"
 4. Click "Execute"
 
-**✅ Expected**:
+**Expected**:
 ```json
 {
   "status": "healthy",
@@ -112,7 +112,7 @@ status_code:500
    - `size`: `10`
 4. Click "Execute"
 
-**✅ Expected**: Returns 10 error logs with pagination info
+**Expected**: Returns 10 error logs with pagination info
 
 ### Test 2.3: Advanced Search with Time Range
 1. Find `POST /api/v1/search`
@@ -133,7 +133,7 @@ status_code:500
 
 4. Click "Execute"
 
-**✅ Expected**: Returns up to 20 errors from api-service in last 24 hours
+**Expected**: Returns up to 20 errors from api-service in last 24 hours
 
 ### Test 2.4: Top Services with Errors (Aggregation)
 1. Find `POST /api/v1/aggregate`
@@ -152,7 +152,7 @@ status_code:500
 
 4. Click "Execute"
 
-**✅ Expected**: Shows which 5 services have the most errors
+**Expected**: Shows which 5 services have the most errors
 
 ### Test 2.5: Error Trends Over Time
 1. Find `POST /api/v1/aggregate`
@@ -167,7 +167,7 @@ status_code:500
 }
 ```
 
-**✅ Expected**: Returns error count per hour (time series data)
+**Expected**: Returns error count per hour (time series data)
 
 ### Test 2.6: Top Values Shortcut
 1. Find `GET /api/v1/top-values/{field}`
@@ -177,7 +177,7 @@ status_code:500
    - `size`: `5`
 4. Click "Execute"
 
-**✅ Expected**: Shows distribution of all log levels
+**Expected**: Shows distribution of all log levels
 
 ### Test 2.7: Index Statistics
 1. Find `GET /api/v1/indices/`
@@ -186,11 +186,11 @@ status_code:500
    - `pattern`: `logs-*`
 4. Click "Execute"
 
-**✅ Expected**: Lists all log indices with document counts and sizes
+**Expected**: Lists all log indices with document counts and sizes
 
 ---
 
-## 📈 Test 3: Grafana (5 minutes)
+## Test 3: Grafana (5 minutes)
 
 **URL**: http://localhost:3100
 **Login**: `admin` / `admin` (change password when prompted)
@@ -201,13 +201,13 @@ status_code:500
 3. Set new password (or skip)
 4. You'll see Grafana welcome screen
 
-**✅ Expected**: Grafana loads successfully and you can login
+**Expected**: Grafana loads successfully and you can login
 
 **Note**: Grafana is running but dashboards are not pre-configured. This is for future metrics visualization (optional M4 feature). For log analytics, use OpenSearch Dashboards instead.
 
 ---
 
-## 📊 Test 4: M4 Dashboards (Pre-built Analytics Dashboards)
+## Test 4: M4 Dashboards (Pre-built Analytics Dashboards)
 
 **Goal**: Import and test the pre-built Operations and Analytics dashboards
 
@@ -305,7 +305,7 @@ Import Complete!
 - [ ] Recent Critical Events (data table)
 - [ ] Top Error Messages (data table)
 
-**✅ Success Criteria**:
+**Success Criteria**:
 - Both dashboards load without errors
 - All visualizations display data
 - Filters and time range selectors work
@@ -331,7 +331,7 @@ Import Complete!
 
 ---
 
-## 💻 Test 5: Command Line (Optional - For Tech Users)
+## Test 5: Command Line (Optional - For Tech Users)
 
 ### Health Check
 ```bash
@@ -374,7 +374,7 @@ curl http://localhost:9200/logs-*/_count?pretty
 
 ---
 
-## 🎯 Fun Test Scenarios
+## Fun Test Scenarios
 
 ### Scenario 1: "Find Critical Issues"
 **Goal**: Find all ERROR and FATAL logs in last 24 hours
@@ -419,7 +419,7 @@ POST /api/v1/aggregate
 
 ---
 
-## ✅ Testing Checklist
+## Testing Checklist
 
 - [ ] All Docker containers running (`docker compose ps`)
 - [ ] OpenSearch Dashboards loads (http://localhost:5601)
@@ -436,7 +436,7 @@ POST /api/v1/aggregate
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Services Not Running?
 ```bash
@@ -473,30 +473,30 @@ docker compose restart analytics-api
 
 ---
 
-## 📸 What Success Looks Like
+## What Success Looks Like
 
 ### OpenSearch Dashboards
-- ✅ See logs with fields: timestamp, level, service, message, host
-- ✅ Can filter by log level
-- ✅ Time range selector works
-- ✅ Visualizations render correctly
+- See logs with fields: timestamp, level, service, message, host
+- Can filter by log level
+- Time range selector works
+- Visualizations render correctly
 
 ### Analytics API
-- ✅ All 14 endpoints respond
-- ✅ Health status is "green"
-- ✅ Search returns results with pagination
-- ✅ Aggregations show buckets with counts
-- ✅ Response time < 100ms for most queries
+- All 14 endpoints respond
+- Health status is "green"
+- Search returns results with pagination
+- Aggregations show buckets with counts
+- Response time < 100ms for most queries
 
 ### Overall System
-- ✅ All services healthy
-- ✅ Can query logs multiple ways
-- ✅ Data is searchable and filterable
-- ✅ API documentation is clear and interactive
+- All services healthy
+- Can query logs multiple ways
+- Data is searchable and filterable
+- API documentation is clear and interactive
 
 ---
 
-## 🎓 Key Endpoints Reference
+## Key Endpoints Reference
 
 | Endpoint | Method | Purpose | Example |
 |----------|--------|---------|---------|
@@ -509,7 +509,7 @@ docker compose restart analytics-api
 
 ---
 
-## 💡 Tips
+## Tips
 
 1. **Start with OpenSearch Dashboards** - Most visual and intuitive
 2. **Then try API** - Understand programmatic access
@@ -519,7 +519,7 @@ docker compose restart analytics-api
 
 ---
 
-## 📞 Need Help?
+## Need Help?
 
 - **API Documentation**: http://localhost:8000/docs
 - **OpenSearch Docs**: https://opensearch.org/docs/latest/
@@ -527,8 +527,12 @@ docker compose restart analytics-api
 
 ---
 
-## ✨ Have Fun Testing!
+## Session Change Log
 
-This is a fully functional log analytics platform. Play around, try different queries, and see what insights you can find in the sample data!
+This section tracks updates to the testing guide after each development session.
 
-**Next Step**: After testing, we'll build beautiful dashboards in M4 to make this data even more accessible! 📊
+| Date | Changes |
+|------|---------|
+| 2026-02-04 | Initial testing guide created with OpenSearch Dashboards, Analytics API, Grafana, and M4 Dashboard tests |
+
+---

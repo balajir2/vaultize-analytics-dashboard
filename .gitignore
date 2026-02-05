@@ -261,3 +261,6 @@ vendor/
 # Force include README files in empty directories
 !**/README.md
 !**/.gitkeep
+
+# Claude Code local settings
+.claude/

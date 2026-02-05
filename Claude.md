@@ -547,6 +547,12 @@ tests/           → all tests
    - Record any important context or decisions
    - Include current state of the system (what's working, what's not)
 
+5. **`docs/operations/testing-guide.md`**
+   - Update the "Session Change Log" table at the bottom of the file
+   - Add new test scenarios for any new features implemented
+   - Update existing tests if endpoints or behavior changed
+   - Add troubleshooting entries for any issues encountered and resolved
+
 **When to update**: Before the user ends the session (e.g., phrases like "let's stop for today", "closing for the day", "that's all for now", etc.)
 
 **Purpose**: These files serve as the primary mechanism for session continuity since conversation context doesn't persist between sessions.
