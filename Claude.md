@@ -226,6 +226,31 @@ pytest --cov=analytics --cov=ingestion --cov-report=html
 
 **Failure to provide tests for new functionality is considered incomplete work.**
 
+### Test Fix Standards
+
+- Tests must always **pass or fail definitively** - never implement skip logic or conditional skipping
+- All tests should run with **real data**, not fabricated placeholders
+- If a test fails, fix the underlying issue - do not suppress or work around the failure
+
+---
+
+## Debugging
+
+When fixing bugs, Claude **must** follow this approach:
+
+1. **Verify the root cause** before implementing any fix - check if the issue is in data extraction, data passing, or backend processing
+2. **Trace the data flow** end-to-end to isolate where the problem actually occurs
+3. **Test with edge cases** like zero values, null values, empty strings, and boundary conditions
+4. **Do not apply speculative fixes** - understand the problem first, then fix it
+
+---
+
+## Workflow
+
+- Always **complete multi-part tasks fully** before ending - if the user requests multiple changes (e.g., merge files AND update a checklist), track and complete all parts
+- Use the TodoWrite tool to track multi-part requests and mark each part as completed
+- Do not consider a task done until every part of the request has been addressed
+
 ---
 
 ## Alerting Philosophy
