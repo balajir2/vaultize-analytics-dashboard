@@ -70,10 +70,14 @@ class TestRegressionDashboardsConfig:
                     f"server.basePath must start with /, got {base_path}"
                 )
 
-        # Verify it's either commented out or not present
-        assert 'server.basePath: ""' not in dashboards_config_raw, (
-            "server.basePath should not be set to empty string"
-        )
+        # Verify no active (uncommented) line sets basePath to empty string
+        for line in dashboards_config_raw.splitlines():
+            stripped = line.strip()
+            if stripped.startswith('#'):
+                continue
+            assert 'server.basePath: ""' not in stripped, (
+                "server.basePath should not be set to empty string"
+            )
 
     def test_regression_002_cors_is_boolean_not_object(
         self, dashboards_config

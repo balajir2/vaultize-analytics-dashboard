@@ -2,7 +2,7 @@
 
 > Complete registry of all regression tests to prevent bug reoccurrence
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-06
 
 ---
 
@@ -149,9 +149,10 @@ Updated all port mappings in docker-compose.yml to use environment variables wit
 
 ### RT-004: Analytics API Endpoints
 
-**File**: `test_regression_004_analytics_api_endpoints.py`
+**File**: `tests/integration/test_regression_004_analytics_api_endpoints.py`
 **Date**: 2026-02-04
 **Severity**: High
+**Moved**: Relocated from `tests/regression/` to `tests/integration/` (2026-02-06) - requires running services (OpenSearch + API), making it an integration test
 
 **Original Feature**:
 Analytics API with comprehensive endpoints for health checks, search, aggregations, and index management was implemented in version 0.2.1+. The API provides a RESTful interface to OpenSearch with full Pydantic validation and OpenAPI documentation.
@@ -160,7 +161,7 @@ Analytics API with comprehensive endpoints for health checks, search, aggregatio
 1. Ensure OpenSearch is running at http://localhost:9200
 2. Ensure Analytics API is running at http://localhost:8000
 3. Generate sample data: `python scripts/data/generate_sample_logs.py`
-4. Run test: `pytest tests/regression/test_regression_004_analytics_api_endpoints.py -v`
+4. Run test: `pytest tests/integration/test_regression_004_analytics_api_endpoints.py -v`
 
 **Implementation Details**:
 - Health check endpoints (/health/, /health/liveness, /health/readiness)
@@ -177,6 +178,154 @@ Analytics API with comprehensive endpoints for health checks, search, aggregatio
 - Confirms index management operations (list, stats, mappings)
 - Validates error handling for invalid queries and non-existent indices
 - Ensures all responses follow the standard API response format
+
+---
+
+### RT-005: Dashboard Panel References Must Match
+
+**File**: `test_regression_005_dashboard_panel_references.py`
+**Date**: 2026-02-06
+**Severity**: High
+
+**Original Bug**:
+OpenSearch Dashboards showed "Could not find reference 'panel_1'" errors when loading imported dashboards. The panelRefName values in panelsJSON did not match the reference name values in the references array.
+
+**How to Reproduce** (original bug):
+1. Import dashboards.ndjson into OpenSearch Dashboards
+2. Open Operations Dashboard or Analytics Dashboard
+3. Panels fail to load with "Could not find reference" errors
+
+**Fix Applied**:
+- Corrected reference naming in dashboards.ndjson
+- Ensured panelRefName in panelsJSON uses 0-based indexing (panel_0, panel_1, ...)
+- Ensured references array name field matches panelRefName exactly
+
+**Test Coverage**:
+- Verifies every panelRefName has a matching reference entry
+- Verifies references point to valid visualization IDs (viz-* naming)
+- Verifies panel indices are 0-based sequential
+- Verifies panel count matches reference count
+
+---
+
+### RT-006: Sample Data Generator Windows Encoding Compatibility
+
+**File**: `test_regression_006_sample_data_encoding.py`
+**Date**: 2026-02-06
+**Severity**: Medium
+
+**Original Bug**:
+The sample log generator used Unicode symbols (checkmarks, crosses) in output messages. On Windows systems with default cp1252 encoding, this caused UnicodeEncodeError crashes when printing to console.
+
+**How to Reproduce** (original bug):
+1. Run generate_sample_logs.py on Windows with default console encoding
+2. Script crashes with UnicodeEncodeError on first Unicode symbol output
+
+**Fix Applied**:
+- Replaced Unicode symbols with ASCII equivalents: [OK], [ERROR]
+- Ensured all output strings use only ASCII-safe characters
+- JSON data itself uses UTF-8 (handled by json.dumps)
+
+**Test Coverage**:
+- Verifies no problematic Unicode symbols in generator source
+- Verifies ASCII-safe status indicators are used
+- Verifies generator is valid Python (parses without errors)
+- Verifies log entries are JSON serializable
+
+---
+
+### RT-007: Fluent Bit Configuration Validation
+
+**File**: `test_regression_007_fluent_bit_config_validation.py`
+**Date**: 2026-02-06
+**Severity**: High
+
+**Original Bug**:
+Fluent Bit configuration must follow strict INI-style format with required sections and valid directives. Misconfigured Fluent Bit causes silent log loss - events are dropped without errors.
+
+**How to Reproduce** (original bug):
+1. Remove [SERVICE] section or required directives from fluent-bit.conf
+2. Start Fluent Bit container
+3. Logs are silently dropped or ingestion fails without clear errors
+
+**Fix Applied**:
+- Ensured [SERVICE] section has Flush, Daemon, and Log_Level directives
+- Configured forward input on standard port 24224
+- OpenSearch output has Logstash_Format On and Suppress_Type_Name On
+
+**Test Coverage**:
+- Verifies [SERVICE] section exists with required directives
+- Verifies at least one [INPUT] and [OUTPUT] section exist
+- Verifies OpenSearch output has Logstash_Format On
+- Verifies Suppress_Type_Name On for OpenSearch 2.x compatibility
+- Verifies forward input on port 24224
+- Verifies parsers file is referenced
+
+---
+
+### RT-008: ILM Policy Validation
+
+**File**: `test_regression_008_ilm_policy_validation.py`
+**Date**: 2026-02-06
+**Severity**: High
+
+**Original Bug**:
+A misconfigured ILM policy causes indices to accumulate without cleanup (disk exhaustion) or premature deletion of logs needed for compliance. All four lifecycle phases must be present with correct min_age progression.
+
+**How to Reproduce** (original bug):
+1. Remove or misconfigure a phase in logs-lifecycle-policy.json
+2. Apply policy to OpenSearch
+3. Indices either never get deleted (disk fills up) or get deleted too early
+
+**Fix Applied**:
+- Ensured all 4 phases (hot/warm/cold/delete) are defined
+- Hot phase has rollover with max_age and max_primary_shard_size
+- Warm phase has forcemerge and shrink for storage optimization
+- Cold phase reduces replicas to 0
+- Delete phase set to 30d minimum for compliance retention
+
+**Test Coverage**:
+- Verifies all four lifecycle phases exist
+- Verifies min_age increases monotonically across phases
+- Verifies hot phase has rollover action
+- Verifies delete phase has delete action
+- Verifies warm phase optimization actions (forcemerge, shrink)
+- Verifies cold phase reduces replicas to 0
+- Verifies policy is valid JSON
+- Verifies delete min_age is at least 30 days
+
+---
+
+### RT-009: OpenSearch Cluster Formation Validation
+
+**File**: `test_regression_009_docker_compose_cluster_formation.py`
+**Date**: 2026-02-06
+**Severity**: Critical
+
+**Original Bug**:
+Mismatched cluster names, missing seed hosts, or inconsistent initial manager nodes in Docker Compose prevent the OpenSearch cluster from forming properly, causing split-brain or single-node operation.
+
+**How to Reproduce** (original bug):
+1. Change cluster.name on one node to a different value
+2. Start docker compose
+3. Nodes form separate clusters instead of joining together
+
+**Fix Applied**:
+- All 3 nodes share cluster.name=vaultize-cluster
+- discovery.seed_hosts lists all 3 nodes
+- cluster.initial_cluster_manager_nodes lists all 3 nodes
+- All nodes on same Docker network with shared opensearch.yml
+
+**Test Coverage**:
+- Verifies exactly 3 OpenSearch nodes defined
+- Verifies consistent cluster.name across all nodes
+- Verifies discovery.seed_hosts lists all nodes
+- Verifies cluster.initial_cluster_manager_nodes lists all nodes
+- Verifies all nodes on same Docker network
+- Verifies shared opensearch.yml config mounted
+- Verifies bootstrap.memory_lock enabled
+- Verifies healthchecks defined on all nodes
+- Verifies consistent OpenSearch image version
 
 ---
 
@@ -220,10 +369,11 @@ The regression test verifies that:
 
 | Category | Count |
 |----------|-------|
-| **Total Regression Tests** | 4 |
-| **Critical Severity** | 2 |
-| **High Severity** | 1 |
-| **Medium Severity** | 1 |
+| **Total Regression Tests** | 8 |
+| **Integration Tests (moved)** | 1 (RT-004) |
+| **Critical Severity** | 3 |
+| **High Severity** | 3 |
+| **Medium Severity** | 2 |
 | **Low Severity** | 0 |
 
 ---
@@ -346,4 +496,4 @@ class TestRegressionXXX:
 
 ---
 
-**Last Updated**: 2026-02-04 (Updated: Added RT-004 Analytics API test)
+**Last Updated**: 2026-02-06 (Updated: Added RT-005 through RT-009 regression tests)
