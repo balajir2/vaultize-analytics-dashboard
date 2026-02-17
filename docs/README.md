@@ -63,6 +63,7 @@ For system architecture diagrams (Mermaid), see [System Architecture Diagrams](.
 | Document | Description |
 |----------|-------------|
 | [Testing Guide](./operations/testing-guide.md) | Complete manual testing walkthrough (Tests 1-8) |
+| [UI Testing Guide](./operations/ui-testing-guide.md) | Browser-only testing — no CLI required |
 | [Performance Tuning](./operations/performance-tuning.md) | OpenSearch and system performance optimization |
 | [Resource Sizing Guide](./operations/resource-sizing-guide.md) | Hardware requirements by deployment size |
 | [Security Hardening Checklist](./operations/security-hardening-checklist.md) | Production security configuration |
