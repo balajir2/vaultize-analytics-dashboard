@@ -621,5 +621,6 @@ This section tracks updates to the testing guide after each development session.
 | 2026-02-04 | Initial testing guide created with OpenSearch Dashboards, Analytics API, Grafana, and M4 Dashboard tests |
 | 2026-02-10 | M5 Alerting Service implemented. Added `docs/operations/full-platform-test-guide.md` for comprehensive end-to-end manual testing of the entire platform (33 test steps across 6 test areas). Alerting service endpoints: health (8001/health/), rules listing, manual trigger, history, reload. |
 | 2026-02-17 | M7 Production Hardening + M6 Testing completion. Added: Test 6 (Alerting Service), Test 7 (Security Mode with TLS/JWT/rate limiting), Test 8 (Grafana dashboards with auto-provisioned datasources). Updated checklist with alerting and Grafana items. New test files: RT-012 through RT-018 (174 regression tests). E2E, integration, and performance test frameworks created. Total regression tests: 238. |
+| 2026-02-17 (Session 2) | Created separate UI-only testing guide (`docs/operations/ui-testing-guide.md`) — 100% browser-based, zero CLI commands. Covers OpenSearch Dashboards, Analytics API Swagger UI, Alerting Service Swagger UI, Grafana, Prometheus. Fixed 7 pre-existing API test failures. Comprehensive doc audit: fixed 11 dead links across 8 files. |
 
 ---

@@ -15,13 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Analytics API: Health check returns "degraded" instead of "unhealthy" when OpenSearch is down
 - Analytics API: Readiness probe returns JSON response instead of HTTPException
 - Test fix: URL-encoded `?` as `%3F` in index deletion wildcard test
+- Fixed 11 dead links across 8 documentation files (quickstart, configuration, environment-setup, DRM guide, etc.)
+- Updated stale dates in 7 documentation files (from 2026-02-04 to 2026-02-17)
+
+### Added
+- docs/operations/ui-testing-guide.md — 100% browser-based manual testing guide (zero CLI commands)
+  - Covers OpenSearch Dashboards, Analytics API Swagger UI, Alerting Service Swagger UI, Grafana, Prometheus
+  - Includes testing checklist and browser-only troubleshooting
 
 ### Changed
+- Root README.md updated from v0.3.0 Alpha (65%) to v1.0.0 Complete (100%)
+- MILESTONES.md detail sections updated (M0, M3-M6) with final test counts and checked-off items
 - Documentation rationalized: removed 6 stub/duplicate files, consolidated into single hub
 - docs/README.md rewritten as single documentation entry point with zero dead links
 - docs/user-guides/README.md cleaned up (removed 7 dead links to never-created sub-docs)
 - analytics/api/tests/COVERAGE_REPORT.md updated (98 tests passing, 0 failures)
-- All milestone detail sections updated to reflect final project state
+- AUTHORS.md updated (Claude model name, session dates)
 
 ### Removed
 - docs/architecture/README.md (stub with 6 dead links)
