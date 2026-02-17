@@ -3,7 +3,7 @@
 > Get the Vaultize Analytics Platform running in under 10 minutes
 
 **Authors**: Balaji Rajan and Claude (Anthropic)
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17
 
 ---
 
@@ -287,11 +287,10 @@ vaultize-analytics/
 
 Now that you have the platform running, explore:
 
-1. **[Creating Dashboards](../user-guides/creating-dashboards.md)** - Build custom dashboards
-2. **[Setting Up Alerts](../user-guides/setting-up-alerts.md)** - Configure alerting
-3. **[API Documentation](../api/README.md)** - Use the RESTful API
-4. **[Configuration Guide](./configuration.md)** - Customize settings
-5. **[Production Deployment](./docker-compose.md)** - Deploy to production
+1. **[User Guides](../user-guides/README.md)** - Search cheat sheet, dashboards, alerts
+2. **[Configuration Guide](./configuration.md)** - Customize settings
+3. **[Testing Guide](../operations/testing-guide.md)** - Manual testing walkthrough
+4. **API Documentation** - Interactive Swagger UI at `http://localhost:8000/docs`
 
 ---
 
@@ -344,8 +343,8 @@ docker compose up -d --build
 
 ## Getting Help
 
-- **Documentation**: Browse [docs/](../)
-- **Troubleshooting**: See [Operations Guide](../operations/troubleshooting.md)
+- **Documentation**: Browse [Documentation Hub](../README.md)
+- **Testing**: See [Testing Guide](../operations/testing-guide.md)
 - **Issues**: [GitHub Issues](https://github.com/your-org/vaultize-analytics/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-org/vaultize-analytics/discussions)
 
@@ -357,14 +356,14 @@ docker compose up -d --build
 
 For production deployment:
 1. Review [Environment Setup](./environment-setup.md)
-2. Follow [Production Deployment Guide](./docker-compose.md)
-3. Read [Security Best Practices](../operations/security-ops.md)
-4. Configure [Backups](../operations/backup-restore.md)
+2. Read [Security Hardening Checklist](../operations/security-hardening-checklist.md)
+3. Configure [Secrets Management](../operations/secrets-management.md)
+4. Set up [Disaster Recovery](../operations/disaster-recovery.md)
 
 ---
 
-**Ready to explore?** Start with [Creating Your First Dashboard](../user-guides/creating-dashboards.md)!
+**Ready to explore?** Start with the [User Guides](../user-guides/README.md)!
 
 ---
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17

@@ -3,7 +3,7 @@
 > Complete configuration guide for all deployment environments
 
 **Authors**: Balaji Rajan and Claude (Anthropic)
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17
 
 ---
 
@@ -441,10 +441,9 @@ docker compose config | grep OPENSEARCH_HOST
 ## Related Documentation
 
 - [Quick Start](./quickstart.md) - Local development setup
-- [Docker Compose Deployment](./docker-compose.md) - Single-server deployment
-- [Kubernetes Deployment](./kubernetes.md) - Multi-server deployment
-- [Security Guide](../operations/security-ops.md) - SSL/TLS configuration
+- [Environment Setup](./environment-setup.md) - Environment-specific configuration
+- [Security Hardening Checklist](../operations/security-hardening-checklist.md) - SSL/TLS and security configuration
 
 ---
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17

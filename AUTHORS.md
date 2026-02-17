@@ -27,8 +27,8 @@ This file acknowledges the original authors and all contributors to the Vaultize
 - Testing framework design
 - Best practices guidance
 
-**Model**: Claude Sonnet 4.5
-**Session Date**: 2026-02-04
+**Model**: Claude Opus 4.6
+**Sessions**: 2026-02-04 through 2026-02-17
 
 ---
 
@@ -88,7 +88,7 @@ _Additional maintainers will be added as the project grows._
 
 _Statistics will be updated periodically_
 
-**Total Contributors**: 2 (as of 2026-02-04)
+**Total Contributors**: 2 (as of 2026-02-17)
 **Total Commits**: TBD
 **Total Pull Requests**: TBD
 
@@ -103,4 +103,4 @@ For questions about contributing:
 
 ---
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17

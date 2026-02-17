@@ -941,8 +941,8 @@ If you expect >10K events/second, contact the Platform team for capacity plannin
 
 ### 10.3 Related Documentation
 
-- [Vaultize Analytics Platform - Architecture](../architecture/README.md)
-- [Vaultize Analytics Platform - API Reference](../api/README.md)
+- [Vaultize Analytics Platform - Technology Stack](../architecture/tech-stack.md)
+- [Vaultize Analytics Platform - Documentation Hub](../README.md)
 - [Vaultize Analytics Platform - Deployment Guide](../deployment/quickstart.md)
 - [OpenSearch Documentation](https://opensearch.org/docs/latest/)
 - [Fluent Bit Documentation](https://docs.fluentbit.io/)

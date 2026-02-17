@@ -3,7 +3,7 @@
 > Quick guide to configuring environments for Vaultize Analytics Platform
 
 **Authors**: Balaji Rajan and Claude (Anthropic)
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17
 
 ---
 
@@ -345,9 +345,9 @@ docker compose down
 ## Related Documentation
 
 - [Configuration Reference](./configuration.md) - Complete variable list
-- [Docker Compose Deployment](./docker-compose.md) - Deployment guide
-- [Security Guide](../operations/security-ops.md) - Security best practices
+- [Security Hardening Checklist](../operations/security-hardening-checklist.md) - Security best practices
+- [Secrets Management](../operations/secrets-management.md) - Credentials and secrets
 
 ---
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17

@@ -7,9 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-02-17 (Documentation Rationalization + Bug Fixes)
 
-No unreleased changes.
+### Fixed
+- Analytics API: Added `GET /search/count` endpoint (was returning 404)
+- Analytics API: Added `GET /health/cluster` endpoint (was returning 404)
+- Analytics API: Health check returns "degraded" instead of "unhealthy" when OpenSearch is down
+- Analytics API: Readiness probe returns JSON response instead of HTTPException
+- Test fix: URL-encoded `?` as `%3F` in index deletion wildcard test
+
+### Changed
+- Documentation rationalized: removed 6 stub/duplicate files, consolidated into single hub
+- docs/README.md rewritten as single documentation entry point with zero dead links
+- docs/user-guides/README.md cleaned up (removed 7 dead links to never-created sub-docs)
+- analytics/api/tests/COVERAGE_REPORT.md updated (98 tests passing, 0 failures)
+- All milestone detail sections updated to reflect final project state
+
+### Removed
+- docs/architecture/README.md (stub with 6 dead links)
+- docs/deployment/README.md (stub with 4 dead links)
+- docs/operations/README.md (stub with 5 dead links)
+- docs/DOCUMENTATION_MAP.md (listed ~30 non-existent docs)
+- docs/api/README.md (all 7 sub-docs never created)
+- docs/operations/full-platform-test-guide.md (duplicate of testing-guide.md)
 
 ---
 
@@ -102,7 +122,7 @@ No unreleased changes.
 - Full regression suite: 64 tests passing (up from 41)
 
 **Documentation**:
-- Comprehensive manual test guide (`docs/operations/full-platform-test-guide.md`) covering entire platform (33 test steps across 6 areas)
+- Updated testing guide (`docs/operations/testing-guide.md`) covering entire platform (Tests 1-8)
 - Updated REGRESSION_TESTS.md with RT-010 and RT-011 entries
 
 ### Changed
