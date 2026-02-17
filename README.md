@@ -79,7 +79,7 @@ Applications / Servers
         Prometheus (Optional: Metrics)
 ```
 
-For detailed architecture, see [Architecture Documentation](docs/architecture/README.md).
+For detailed architecture, see [Technology Stack](docs/architecture/tech-stack.md) and [System Architecture Diagrams](docs/architecture/diagrams/system-architecture.md).
 
 ---
 
@@ -110,19 +110,23 @@ See [Technology Stack](docs/architecture/tech-stack.md) for complete details.
 
 ## Documentation
 
-- **[Architecture](docs/architecture/README.md)** - System design and components
-- **[Deployment](docs/deployment/README.md)** - Installation and configuration
-- **[Operations](docs/operations/README.md)** - Maintenance and troubleshooting
-- **[API Reference](docs/api/README.md)** - RESTful API documentation
-- **[User Guides](docs/user-guides/README.md)** - End-user documentation
+All documentation is accessible from the **[Documentation Hub](docs/README.md)**, including:
+
+- **[Quick Start](docs/deployment/quickstart.md)** - Get running in minutes
+- **[Technology Stack](docs/architecture/tech-stack.md)** - Component choices and rationale
+- **[Configuration](docs/deployment/configuration.md)** - Environment variables and settings
+- **[Testing Guide](docs/operations/testing-guide.md)** - Manual testing walkthrough (Tests 1-8)
+- **[Security Hardening](docs/operations/security-hardening-checklist.md)** - Production security
+- **[User Guides](docs/user-guides/README.md)** - Search cheat sheet, use cases, best practices
+- **API Reference** - Interactive Swagger UI at `http://localhost:8000/docs`
 
 ---
 
 ## Project Status
 
-**Current Version**: 0.3.0 (Alpha)
-**Status**: In Active Development
-**Overall Progress**: ~65% Complete
+**Current Version**: 1.0.0
+**Status**: Complete
+**Overall Progress**: 100%
 
 See [MILESTONES.md](MILESTONES.md) for roadmap and [CHANGELOG.md](CHANGELOG.md) for version history.
 
@@ -130,66 +134,34 @@ See [MILESTONES.md](MILESTONES.md) for roadmap and [CHANGELOG.md](CHANGELOG.md) 
 
 ```
 M0: Project Scaffold        [####################] 100%  Complete
-M1: Infrastructure Layer    [##################--]  90%  In Progress
-M2: Ingestion Pipeline      [################----]  80%  In Progress
-M3: Analytics Services      [###################-]  95%  Complete
-M4: Dashboards              [###################-]  95%  Complete
-M5: Alerting System         [--------------------]   0%  Not Started
-M6: Testing & Documentation [###############-----]  75%  In Progress
-M7: Production Hardening    [--------------------]   0%  Not Started
+M1: Infrastructure Layer    [####################] 100%  Complete
+M2: Ingestion Pipeline      [####################] 100%  Complete
+M3: Analytics Services      [####################] 100%  Complete
+M4: Dashboards              [####################] 100%  Complete
+M5: Alerting System         [####################] 100%  Complete
+M6: Testing & Documentation [####################] 100%  Complete
+M7: Production Hardening    [####################] 100%  Complete
 ```
 
-| Milestone | Status | Highlights |
-|-----------|--------|------------|
-| **M0: Project Scaffold** | Complete | Directory structure, documentation, session continuity |
-| **M1: Infrastructure** | 90% | Docker Compose stack, 3-node OpenSearch cluster, all configs |
-| **M2: Ingestion** | 80% | Fluent Bit with 4 parsers, multi-source support |
-| **M3: Analytics API** | 95% | 14 REST endpoints, 89% test coverage, sample data generator |
-| **M4: Dashboards** | 95% | 2 pre-built dashboards, 6 visualizations, import scripts |
-| **M5: Alerting** | 0% | Not started |
-| **M6: Testing & Docs** | 75% | 74 unit tests passing, comprehensive documentation |
-| **M7: Production** | 0% | Not started |
+| Milestone | Highlights |
+|-----------|------------|
+| **M0: Project Scaffold** | Directory structure, documentation, session continuity |
+| **M1: Infrastructure** | Docker Compose stack, 3-node OpenSearch cluster, all configs |
+| **M2: Ingestion** | Fluent Bit with 4 parsers, multi-source support, sample logs |
+| **M3: Analytics API** | 17 REST endpoints, 89% test coverage, JWT auth |
+| **M4: Dashboards** | 2 OpenSearch dashboards + 1 Grafana dashboard, import scripts |
+| **M5: Alerting** | Threshold-based alerts, webhook notifications, state management |
+| **M6: Testing & Docs** | 437 tests passing, 34 docs with zero dead links |
+| **M7: Production** | TLS, RBAC, backup/restore, security hardening, ops scripts |
 
----
+### Test Results
 
-## What Remains
-
-### High Priority (Required for MVP)
-
-| Task | Milestone | Effort |
-|------|-----------|--------|
-| Bootstrap scripts for cluster initialization | M1 | Small |
-| Health check automation scripts | M1 | Small |
-| Sample log generators for testing | M2 | Small |
-| Alerting service (rule engine, webhooks) | M5 | Large |
-| E2E tests for complete log flow | M6 | Medium |
-
-### Medium Priority (Quality & Polish)
-
-| Task | Milestone | Effort |
-|------|-----------|--------|
-| Ingestion monitoring dashboards | M2 | Medium |
-| API authentication/authorization | M7 | Medium |
-| Integration tests for ingestion pipeline | M6 | Medium |
-| Operations guide (troubleshooting, maintenance) | M6 | Medium |
-| Grafana dashboards for metrics | M4 | Small |
-
-### Lower Priority (Production Hardening)
-
-| Task | Milestone | Effort |
-|------|-----------|--------|
-| SSL/TLS configuration | M7 | Medium |
-| Role-based access control (RBAC) | M7 | Medium |
-| Backup and restore procedures | M7 | Medium |
-| Performance tuning documentation | M7 | Small |
-| Kubernetes deployment manifests | M7 | Large |
-
-### Deferred (Post-MVP)
-
-- Vector search integration
-- ML-based anomaly detection
-- Kafka ingestion buffering
-- Multi-tenancy support
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| Analytics API | 98 passing | 89% |
+| Alerting Service | 101 passing | 81% |
+| Regression (RT-001 to RT-018) | 238 passing | — |
+| **Total** | **437 passing** | **>80%** |
 
 ---
 
@@ -316,17 +288,17 @@ See [AUTHORS.md](AUTHORS.md) for complete contributor list.
 
 ## Roadmap
 
-**v1.0 Goals** (MVP):
+**v1.0** (Complete):
 - ✅ Project structure and documentation
 - ✅ Docker Compose deployment (3-node OpenSearch cluster)
 - ✅ OpenSearch cluster with index templates and ILM
 - ✅ Fluent Bit log ingestion (4 parser types)
-- ✅ Analytics API (14 endpoints, 89% test coverage)
-- ✅ Pre-built dashboards (Operations + Analytics)
-- 🔄 Alerting system (in progress)
-- 🔄 Production hardening (SSL, auth, backups)
+- ✅ Analytics API (17 endpoints, 89% test coverage, JWT auth)
+- ✅ Pre-built dashboards (2 OpenSearch + 1 Grafana)
+- ✅ Alerting system (threshold rules, webhooks, state management)
+- ✅ Production hardening (TLS, RBAC, backup/restore, ops scripts)
 
-**Post-v1.0**:
+**Post-v1.0** (Future):
 - Kubernetes deployment manifests
 - Advanced alerting (ML-based anomaly detection)
 - Vector search capabilities
@@ -339,8 +311,9 @@ See [MILESTONES.md](MILESTONES.md) for detailed roadmap.
 
 ## Getting Help
 
-- Check [Troubleshooting Guide](docs/operations/troubleshooting.md)
+- Check [Documentation Hub](docs/README.md)
 - Review [User Guides](docs/user-guides/README.md)
+- Review [Testing Guide](docs/operations/testing-guide.md)
 - Search [existing issues](../../issues)
 - Ask in [Discussions](../../discussions)
 
