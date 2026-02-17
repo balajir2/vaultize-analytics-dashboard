@@ -167,8 +167,8 @@ class TestDeleteIndex:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "Wildcards not allowed" in response.json()["detail"]
 
-        # Test with question mark
-        response = test_client.delete("/api/v1/indices/logs-?")
+        # Test with question mark (URL-encode ? as %3F since ? is query string separator)
+        response = test_client.delete("/api/v1/indices/logs-%3F")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
         # Ensure delete was never called

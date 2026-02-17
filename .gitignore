@@ -262,5 +262,8 @@ vendor/
 !**/README.md
 !**/.gitkeep
 
+# Force include sample log files for testing
+!ingestion/sample-logs/*.log
+
 # Claude Code local settings
 .claude/

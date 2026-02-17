@@ -63,7 +63,12 @@ class Settings(BaseSettings):
     # Security Settings
     # ========================================================================
 
-    # JWT settings (for future authentication)
+    # Authentication (opt-in: disabled by default for development)
+    auth_enabled: bool = Field(default=False, env="AUTH_ENABLED")
+    auth_admin_username: str = Field(default="admin", env="AUTH_ADMIN_USERNAME")
+    auth_admin_password: str = Field(default="admin", env="AUTH_ADMIN_PASSWORD")
+
+    # JWT settings
     secret_key: str = Field(
         default="CHANGE_ME_IN_PRODUCTION",  # Must be changed in production!
         env="API_SECRET_KEY"

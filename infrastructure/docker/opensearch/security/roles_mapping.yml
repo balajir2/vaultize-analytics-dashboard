@@ -1,0 +1,51 @@
+# OpenSearch Security - Role Mappings
+#
+# Maps backend roles (from internal_users.yml) to OpenSearch security roles.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Admin users get full access
+admin_full:
+  reserved: false
+  backend_roles:
+    - "admin"
+
+all_access:
+  reserved: false
+  backend_roles:
+    - "admin"
+
+# Log writers (Fluent Bit)
+log_writer:
+  reserved: false
+  backend_roles:
+    - "logwriter"
+
+# Log readers (API, dashboards)
+log_reader:
+  reserved: false
+  backend_roles:
+    - "readall"
+
+# Alert managers (API, alerting service)
+alert_manager:
+  reserved: false
+  backend_roles:
+    - "alertmanager"
+
+# OpenSearch Dashboards access
+kibana_user:
+  reserved: false
+  backend_roles:
+    - "readall"
+    - "admin"
+
+kibana_server:
+  reserved: true
+  users:
+    - "kibanaserver"

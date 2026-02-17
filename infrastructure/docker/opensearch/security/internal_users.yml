@@ -1,0 +1,45 @@
+# OpenSearch Security - Internal Users
+#
+# Defines the internal user database for the Vaultize Analytics Platform.
+# Passwords are bcrypt hashed. Use the OpenSearch hash.sh tool to generate:
+#   /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p <password>
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+# Platform administrator - full access
+admin:
+  hash: "$2y$12$Wl2MVmxBf7HxnHJXMGJz7eM8sSXk3KGdRXKfGYCN1Bf2RzA1j3G2C"  # Default: admin (CHANGE IN PRODUCTION)
+  reserved: true
+  backend_roles:
+    - "admin"
+  description: "Platform administrator"
+
+# Fluent Bit log writer - can write to log indices only
+fluent_bit_writer:
+  hash: "$2y$12$Wl2MVmxBf7HxnHJXMGJz7eM8sSXk3KGdRXKfGYCN1Bf2RzA1j3G2C"  # Default: fluentbit (CHANGE IN PRODUCTION)
+  reserved: false
+  backend_roles:
+    - "logwriter"
+  description: "Fluent Bit log ingestion service account"
+
+# Analytics API user - read access to logs, write to alert indices
+api_user:
+  hash: "$2y$12$Wl2MVmxBf7HxnHJXMGJz7eM8sSXk3KGdRXKfGYCN1Bf2RzA1j3G2C"  # Default: apiuser (CHANGE IN PRODUCTION)
+  reserved: false
+  backend_roles:
+    - "readall"
+    - "alertmanager"
+  description: "Analytics API service account"
+
+# Read-only user for dashboards
+viewer:
+  hash: "$2y$12$Wl2MVmxBf7HxnHJXMGJz7eM8sSXk3KGdRXKfGYCN1Bf2RzA1j3G2C"  # Default: viewer (CHANGE IN PRODUCTION)
+  reserved: false
+  backend_roles:
+    - "readall"
+  description: "Read-only dashboard viewer"

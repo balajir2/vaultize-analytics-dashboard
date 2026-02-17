@@ -1,0 +1,74 @@
+# OpenSearch Security - Role Definitions
+#
+# Custom roles for the Vaultize Analytics Platform.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "roles"
+  config_version: 2
+
+# Write access to log indices (for Fluent Bit)
+log_writer:
+  cluster_permissions:
+    - "cluster_monitor"
+    - "indices:data/write/bulk"
+  index_permissions:
+    - index_patterns:
+        - "logs-*"
+      allowed_actions:
+        - "crud"
+        - "create_index"
+    - index_patterns:
+        - ".ds-logs-*"
+      allowed_actions:
+        - "crud"
+        - "create_index"
+
+# Read access to log indices (for API and dashboards)
+log_reader:
+  cluster_permissions:
+    - "cluster_monitor"
+  index_permissions:
+    - index_patterns:
+        - "logs-*"
+      allowed_actions:
+        - "read"
+        - "search"
+    - index_patterns:
+        - ".ds-logs-*"
+      allowed_actions:
+        - "read"
+        - "search"
+
+# Alert management - read/write to alert indices
+alert_manager:
+  cluster_permissions:
+    - "cluster_monitor"
+  index_permissions:
+    - index_patterns:
+        - ".alerts-*"
+      allowed_actions:
+        - "crud"
+        - "create_index"
+    - index_patterns:
+        - "logs-*"
+      allowed_actions:
+        - "read"
+        - "search"
+
+# Full admin access
+admin_full:
+  cluster_permissions:
+    - "*"
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "*"
+  tenant_permissions:
+    - tenant_patterns:
+        - "*"
+      allowed_actions:
+        - "kibana_all_write"

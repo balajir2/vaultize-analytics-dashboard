@@ -1,0 +1,10 @@
+{"timestamp": "2026-02-17T09:00:00.000Z", "level": "INFO", "service": "api-service", "message": "Server started on port 8000", "host": "server-01", "environment": "production"}
+{"timestamp": "2026-02-17T09:00:05.000Z", "level": "INFO", "service": "auth-service", "message": "User logged in", "host": "server-01", "environment": "production", "user": "admin"}
+{"timestamp": "2026-02-17T09:00:10.000Z", "level": "DEBUG", "service": "cache-service", "message": "Cache hit for key", "host": "server-02", "environment": "production"}
+{"timestamp": "2026-02-17T09:00:15.000Z", "level": "WARN", "service": "db-service", "message": "Slow query detected: 2500ms", "host": "server-03", "environment": "production", "duration_ms": 2500}
+{"timestamp": "2026-02-17T09:00:20.000Z", "level": "ERROR", "service": "api-service", "message": "Connection timeout after 30s", "host": "server-01", "environment": "production", "error_code": "ERR_5001", "status_code": 504}
+{"timestamp": "2026-02-17T09:00:25.000Z", "level": "INFO", "service": "web-service", "message": "Request processed successfully", "host": "server-02", "environment": "production", "status_code": 200, "duration_ms": 45}
+{"timestamp": "2026-02-17T09:00:30.000Z", "level": "ERROR", "service": "auth-service", "message": "Authentication token expired", "host": "server-01", "environment": "production", "user": "user1", "error_code": "ERR_4012"}
+{"timestamp": "2026-02-17T09:00:35.000Z", "level": "INFO", "service": "db-service", "message": "Database connection established", "host": "server-03", "environment": "production"}
+{"timestamp": "2026-02-17T09:00:40.000Z", "level": "FATAL", "service": "cache-service", "message": "Service unavailable", "host": "server-02", "environment": "production", "error_code": "ERR_9999"}
+{"timestamp": "2026-02-17T09:00:45.000Z", "level": "INFO", "service": "api-service", "message": "Health check passed", "host": "server-01", "environment": "production", "status_code": 200}

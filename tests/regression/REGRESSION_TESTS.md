@@ -329,6 +329,70 @@ Mismatched cluster names, missing seed hosts, or inconsistent initial manager no
 
 ---
 
+### RT-010: Alert Rule Configuration Validation
+
+**File**: `test_regression_010_alert_rule_config_validation.py`
+**Date**: 2026-02-10
+**Severity**: High
+
+**Original Bug**:
+Alert rule JSON files in configs/alert-rules/ must conform to a strict schema for the alerting service to load them. Missing required fields, invalid operators, malformed intervals, or bad webhook configs cause silent rule loading failures - alerts never fire.
+
+**How to Reproduce** (original bug):
+1. Create a rule with `"operator": "bigger"` instead of `"gt"`
+2. Start the alerting service
+3. Rule loads but condition evaluator always returns False - alert never fires
+
+**Fix Applied**:
+- Alerting service validates all rule fields on load via Pydantic models
+- This regression test validates the existing JSON rule configs independently
+
+**Test Coverage**:
+- Verifies all rule files are valid JSON
+- Verifies required top-level fields present
+- Verifies condition.operator is one of: gt, gte, lt, lte, eq
+- Verifies schedule.interval matches pattern `<number><s|m|h|d>`
+- Verifies actions have valid webhook configs with url and method
+- Verifies throttle.unit is: seconds, minutes, or hours
+- Verifies metadata.severity is: critical, high, medium, or low
+- Verifies query has required fields (index, time_range, filter)
+- Verifies metadata has required fields (severity, category, owner)
+
+---
+
+### RT-011: Alert State Machine Transitions
+
+**File**: `test_regression_011_alert_state_transitions.py`
+**Date**: 2026-02-10
+**Severity**: Critical
+
+**Original Bug**:
+The alerting service state machine must correctly transition between OK, FIRING, and RESOLVED states. Incorrect transitions cause missed alerts, alert storms, or stuck states.
+
+**How to Reproduce** (original bug):
+1. Configure an alert with threshold > 100
+2. Condition met (value=150) but state doesn't transition to FIRING
+3. No notification sent despite threshold breach
+
+**Fix Applied**:
+- Implemented correct state machine: OK->FIRING->RESOLVED->OK
+- Added throttle enforcement to prevent alert storms
+- All 5 comparison operators properly evaluated
+
+**Test Coverage**:
+- Verifies OK -> FIRING transition on condition met (with notification)
+- Verifies FIRING -> RESOLVED transition on condition cleared (with notification)
+- Verifies RESOLVED -> OK transition on continued clear (silent)
+- Verifies RESOLVED -> FIRING re-trigger (with notification)
+- Verifies OK stays OK when condition not met (silent)
+- Verifies full lifecycle: OK -> FIRING -> RESOLVED -> OK
+- Verifies throttle prevents repeat notifications within window
+- Verifies throttle allows notifications after window expires
+- Verifies all 5 operators registered (gt, gte, lt, lte, eq)
+- Verifies each operator evaluates correctly at boundary values
+
+---
+
 ## Example (For Reference)
 
 ### RT-001: OpenSearch Index Creation Race Condition
@@ -365,15 +429,93 @@ The regression test verifies that:
 
 ---
 
+### RT-012: File-Based Log Ingestion Configuration
+
+**File**: `test_regression_012_file_ingestion_config.py`
+**Date**: 2026-02-17
+**Severity**: High
+**Tests**: 18
+
+Validates Fluent Bit tail inputs for file-based ingestion, parsers, Docker volume mounts, and sample log directory.
+
+---
+
+### RT-013: TLS Certificate Configuration
+
+**File**: `test_regression_013_tls_cert_config.py`
+**Date**: 2026-02-17
+**Severity**: Critical
+**Tests**: 28
+
+Validates cert generation scripts, OpenSearch security configs (internal_users, roles, roles_mapping, config), and cert directory structure.
+
+---
+
+### RT-014: Security Override Configuration
+
+**File**: `test_regression_014_security_override_config.py`
+**Date**: 2026-02-17
+**Severity**: Critical
+**Tests**: 22
+
+Validates docker-compose.security.yml overlay, secure OpenSearch/Dashboards/Fluent Bit configs, and start/init scripts.
+
+---
+
+### RT-015: JWT Authentication Configuration
+
+**File**: `test_regression_015_jwt_auth_config.py`
+**Date**: 2026-02-17
+**Severity**: Critical
+**Tests**: 25
+
+Validates auth middleware modules, dependencies, config fields, main.py integration, and auth module functions.
+
+---
+
+### RT-016: Grafana Provisioning and CORS Hardening
+
+**File**: `test_regression_016_grafana_provisioning.py`
+**Date**: 2026-02-17
+**Severity**: High
+**Tests**: 30
+
+Validates Grafana datasource/dashboard provisioning, platform health dashboard, CORS hardening, and secrets documentation.
+
+---
+
+### RT-017: Operations Scripts and DR Documentation
+
+**File**: `test_regression_017_ops_scripts_validation.py`
+**Date**: 2026-02-17
+**Severity**: High
+**Tests**: 29
+
+Validates backup/restore scripts, health check, bootstrap, and disaster recovery documentation.
+
+---
+
+### RT-018: E2E Test Structure
+
+**File**: `test_regression_018_e2e_test_structure.py`
+**Date**: 2026-02-17
+**Severity**: Medium
+**Tests**: 22
+
+Validates E2E test files, conftest fixtures, pytest markers, and service fixture usage.
+
+---
+
 ## Statistics
 
 | Category | Count |
 |----------|-------|
-| **Total Regression Tests** | 8 |
+| **Total Regression Tests** | 238 |
+| **Regression Test Files** | 17 (RT-001 through RT-018, minus RT-004 moved) |
 | **Integration Tests (moved)** | 1 (RT-004) |
-| **Critical Severity** | 3 |
-| **High Severity** | 3 |
-| **Medium Severity** | 2 |
+| **Critical Severity** | 7 |
+| **High Severity** | 7 |
+| **Medium Severity** | 3 |
 | **Low Severity** | 0 |
 
 ---
@@ -496,4 +638,4 @@ class TestRegressionXXX:
 
 ---
 
-**Last Updated**: 2026-02-06 (Updated: Added RT-005 through RT-009 regression tests)
+**Last Updated**: 2026-02-17 (Updated: Added RT-012 through RT-018 for production hardening and testing)

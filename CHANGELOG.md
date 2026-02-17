@@ -9,10 +9,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+No unreleased changes.
+
+---
+
+## [0.4.0] - 2026-02-17 (M7: Production Hardening + M6: Testing Completion)
+
 ### Added
-- Analytics API routers (search, aggregations, index management) - in progress
-- Alerting service implementation - pending
-- Operational scripts (bootstrap, health checks) - pending
+
+**File-Based Log Ingestion**:
+- Fluent Bit tail inputs for `*.log` (JSON) and `*.txt` (structured) files
+- Sample log directory with README and sample data
+- Log file generator script (`scripts/data/generate_sample_log_files.py`)
+
+**TLS Certificate Infrastructure**:
+- Certificate generation scripts (bash + Python)
+- OpenSearch security configs: internal_users, roles, roles_mapping, config
+
+**OpenSearch Security Plugin**:
+- Docker Compose overlay (`docker-compose.security.yml`) for secure mode
+- Secure configs for OpenSearch, Dashboards, and Fluent Bit
+- Start and initialize scripts for secure mode
+
+**JWT Authentication Middleware**:
+- Analytics API: auth middleware, rate limiter, user models, auth router
+- Alerting Service: JWT token validation middleware
+- Auth opt-in via `AUTH_ENABLED=false` (default)
+
+**CORS Hardening & Grafana Setup**:
+- Restrictive CORS in production/staging
+- Grafana datasource provisioning (OpenSearch + Prometheus)
+- Platform health Grafana dashboard (14 panels)
+- Secrets management documentation
+
+**Operations Scripts**:
+- backup_opensearch.py, restore_opensearch.py, health_check.py, bootstrap.sh
+- Disaster recovery guide
+
+**E2E, Integration, and Performance Tests**:
+- E2E: log ingestion flow, alert flow, dashboard flow
+- Integration: Fluent Bit, ingestion pipeline, alerting
+- Performance: bulk indexing, query latency, API throughput
+
+**Documentation**:
+- Architecture diagrams (Mermaid), security checklist, resource sizing, performance tuning
+
+**Regression Tests** (RT-012 through RT-018, 174 new tests):
+- RT-012 (18), RT-013 (28), RT-014 (22), RT-015 (25), RT-016 (30), RT-017 (29), RT-018 (22)
+
+### Changed
+- `analytics/api/app/config.py` — Auth, JWT, and rate limit settings
+- `analytics/api/app/main.py` — CORS hardening, auth router, rate limit middleware
+- `analytics/alerting/app/config.py` — Auth settings
+- `docker-compose.yml` — Sample-logs volume mount
+- `ingestion/configs/fluent-bit/fluent-bit.conf` — Tail inputs and record modifier
+- `.gitignore` — Cert patterns, sample log exception
+
+---
+
+## [0.3.0] - 2026-02-10 (M5: Alerting System)
+
+### Added
+
+**Alerting Service** (complete implementation):
+- Python alerting service with FastAPI management API (port 8001)
+- APScheduler-based periodic alert checks with configurable intervals
+- OpenSearch query executor supporting count and aggregation queries
+- Condition evaluator with 5 operators: gt, gte, lt, lte, eq
+- State machine: OK -> FIRING -> RESOLVED -> OK with throttle enforcement
+- Webhook notifier with async HTTP (httpx), retry with exponential backoff
+- Template renderer for webhook bodies ({{alert.variable}} substitution)
+- Environment variable substitution in JSON rule configs (${ENV_VAR} pattern)
+- Alert state persistence in `.alerts-state` OpenSearch index
+- Alert history tracking in `.alerts-history` OpenSearch index
+- Management API endpoints:
+  - `GET /health/` - overall health with OpenSearch and scheduler status
+  - `GET /health/liveness` - Kubernetes liveness probe
+  - `GET /health/readiness` - Kubernetes readiness probe
+  - `GET /api/v1/alerts/rules` - list all rules with current state
+  - `GET /api/v1/alerts/rules/{name}/status` - detailed rule status
+  - `POST /api/v1/alerts/rules/{name}/trigger` - manual trigger
+  - `GET /api/v1/alerts/history` - query alert history
+  - `POST /api/v1/alerts/rules/reload` - force reload rules from disk
+- Dockerfile with multi-stage build, non-root user, health check
+- Docker Compose integration with port mapping, healthcheck, alert-rules volume
+
+**Testing**:
+- 94 unit tests for alerting service (81% coverage, exceeds >80% requirement)
+- Test files: conftest.py, test_rule_loader.py, test_query_executor.py, test_condition_evaluator.py, test_state_manager.py, test_webhook_notifier.py, test_template_renderer.py, test_health_router.py, test_alerts_router.py
+- RT-010: Alert rule config validation regression test (9 tests)
+- RT-011: Alert state machine transitions regression test (14 tests)
+- Full regression suite: 64 tests passing (up from 41)
+
+**Documentation**:
+- Comprehensive manual test guide (`docs/operations/full-platform-test-guide.md`) covering entire platform (33 test steps across 6 areas)
+- Updated REGRESSION_TESTS.md with RT-010 and RT-011 entries
+
+### Changed
+- Docker Compose alerting-service: added port mapping (8001), healthcheck, ALERT_RULES_DIR env var
+- Docker Compose alerting-service: removed conflicting `./analytics/alerting:/app:ro` volume mount
+- Updated requirements to use compatible version ranges (>= instead of ==) for Python 3.13 support
 
 ---
 

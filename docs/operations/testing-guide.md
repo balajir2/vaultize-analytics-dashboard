@@ -1,6 +1,6 @@
 # Vaultize Analytics - Manual Testing Guide
 
-**Last Updated**: 2026-02-04
+**Last Updated**: 2026-02-17
 **Authors**: Balaji Rajan and Claude (Anthropic)
 **License**: Apache 2.0
 **System Status**: Fully Operational
@@ -419,6 +419,88 @@ POST /api/v1/aggregate
 
 ---
 
+## Test 6: Alerting Service (5-10 minutes)
+
+**URL**: http://localhost:8001/docs (Interactive Swagger UI)
+
+### Test 6.1: Health Check
+1. Open http://localhost:8001/docs
+2. Find `GET /health/` endpoint
+3. Click "Try it out" → "Execute"
+
+**Expected**: Status "healthy" with OpenSearch connected and scheduler running
+
+### Test 6.2: List Alert Rules
+1. Find `GET /api/v1/alerts/rules`
+2. Click "Try it out" → "Execute"
+
+**Expected**: Returns list of loaded alert rules (high-error-rate, slow-api-response)
+
+### Test 6.3: Rule Status
+1. Find `GET /api/v1/alerts/rules/{name}/status`
+2. Enter rule name: `high-error-rate`
+3. Click "Execute"
+
+**Expected**: Returns current state (OK/FIRING), last check time, threshold config
+
+### Test 6.4: Manual Trigger
+1. Find `POST /api/v1/alerts/rules/{name}/trigger`
+2. Enter rule name: `high-error-rate`
+3. Click "Execute"
+
+**Expected**: Returns evaluation result with current metric value vs threshold
+
+---
+
+## Test 7: Security Mode (Advanced)
+
+**Goal**: Test TLS and authentication (opt-in)
+
+### Start in Secure Mode
+```bash
+bash scripts/ops/start_secure.sh
+bash scripts/ops/initialize_security.sh
+```
+
+### Test JWT Auth
+```bash
+# Get token
+curl -X POST http://localhost:8000/auth/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin&password=<your-password>"
+
+# Use token
+curl http://localhost:8000/api/v1/search/simple?q=* \
+  -H "Authorization: Bearer <token>"
+```
+
+### Test Rate Limiting
+```bash
+# Rapid requests (should get 429 after limit)
+for i in $(seq 1 100); do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/health/; done
+```
+
+---
+
+## Test 8: Grafana Dashboards (5 minutes)
+
+**URL**: http://localhost:3100
+**Login**: `admin` / `admin`
+
+### Steps:
+1. Login to Grafana
+2. Navigate to Dashboards
+3. Open **"Vaultize Platform Health"** dashboard
+
+**What You Should See (14 panels)**:
+- Total Services, Active Alerts, Error Rate, Uptime stats
+- Service Health Status, Fluent Bit metrics
+- OpenSearch log viewer with log levels
+
+**Note**: Datasources (OpenSearch + Prometheus) are auto-provisioned.
+
+---
+
 ## Testing Checklist
 
 - [ ] All Docker containers running (`docker compose ps`)
@@ -431,8 +513,11 @@ POST /api/v1/aggregate
 - [ ] Health endpoint returns green status
 - [ ] Simple search returns results
 - [ ] Aggregation shows service distribution
+- [ ] Alerting service loads (http://localhost:8001/docs)
+- [ ] Alert rules are loaded and evaluating
 - [ ] Grafana loads (http://localhost:3100)
 - [ ] Can login to Grafana
+- [ ] Platform Health dashboard available
 
 ---
 
@@ -534,5 +619,7 @@ This section tracks updates to the testing guide after each development session.
 | Date | Changes |
 |------|---------|
 | 2026-02-04 | Initial testing guide created with OpenSearch Dashboards, Analytics API, Grafana, and M4 Dashboard tests |
+| 2026-02-10 | M5 Alerting Service implemented. Added `docs/operations/full-platform-test-guide.md` for comprehensive end-to-end manual testing of the entire platform (33 test steps across 6 test areas). Alerting service endpoints: health (8001/health/), rules listing, manual trigger, history, reload. |
+| 2026-02-17 | M7 Production Hardening + M6 Testing completion. Added: Test 6 (Alerting Service), Test 7 (Security Mode with TLS/JWT/rate limiting), Test 8 (Grafana dashboards with auto-provisioned datasources). Updated checklist with alerting and Grafana items. New test files: RT-012 through RT-018 (174 regression tests). E2E, integration, and performance test frameworks created. Total regression tests: 238. |
 
 ---

@@ -1,0 +1,22 @@
+# Grafana Dashboard Provisioning
+#
+# Tells Grafana where to find dashboard JSON files.
+# Dashboards are auto-loaded from the configured path at startup.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+apiVersion: 1
+
+providers:
+  - name: "Vaultize Platform"
+    orgId: 1
+    folder: "Vaultize Analytics"
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

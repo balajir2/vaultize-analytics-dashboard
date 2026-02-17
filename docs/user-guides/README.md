@@ -2,126 +2,17 @@
 
 > End-user documentation for using the Vaultize Analytics Platform
 
----
-
-## Overview
-
-These guides help users effectively search logs, create dashboards, set up alerts, and get the most out of the platform.
+**Last Updated**: 2026-02-17
 
 ---
 
-## Documents
-
-### [Getting Started](./getting-started.md)
-Your first steps with the platform.
-
-**Topics Covered**:
-- Logging in to OpenSearch Dashboards
-- Understanding the interface
-- Your first search
-- Basic navigation
-- Key concepts and terminology
-
-**Status**: 🔴 Not Started
-
----
-
-### [Searching Logs](./searching-logs.md)
-Master log search capabilities.
-
-**Topics Covered**:
-- Search syntax
-- Time range selection
-- Field-based filtering
-- Full-text search
-- Boolean operators
-- Wildcard and regex searches
-- Search best practices
-
-**Status**: 🔴 Not Started
-
----
-
-### [Creating Dashboards](./creating-dashboards.md)
-Build custom dashboards for your use cases.
-
-**Topics Covered**:
-- Dashboard basics
-- Adding visualizations
-- Layout and organization
-- Time range controls
-- Filters and parameters
-- Sharing dashboards
-- Dashboard best practices
-
-**Status**: 🔴 Not Started
-
----
-
-### [Setting Up Alerts](./setting-up-alerts.md)
-Configure alerts for important events.
-
-**Topics Covered**:
-- Alert concepts
-- Creating alert rules
-- Threshold configuration
-- Notification channels (webhook, email, etc.)
-- Testing alerts
-- Managing alert fatigue
-
-**Status**: 🔴 Not Started
-
----
-
-### [Using Visualizations](./visualizations.md)
-Create effective visualizations.
-
-**Topics Covered**:
-- Visualization types (line, bar, pie, table, etc.)
-- Metric visualizations
-- Aggregation-based charts
-- Time series visualizations
-- Heatmaps and histograms
-- Customization options
-
-**Status**: 🔴 Not Started
-
----
-
-### [Saved Searches](./saved-searches.md)
-Save and reuse common searches.
-
-**Topics Covered**:
-- Creating saved searches
-- Organizing searches
-- Sharing searches with team
-- Parameterized searches
-- Scheduled searches
-
-**Status**: 🔴 Not Started
-
----
-
-### [Best Practices](./best-practices.md)
-Tips for effective log analysis.
-
-**Topics Covered**:
-- Efficient search strategies
-- Dashboard design principles
-- Alert tuning
-- Performance optimization
-- Common pitfalls to avoid
-
-**Status**: 🔴 Not Started
-
----
-
-## Quick Start Guide
+## Quick Start
 
 ### 1. Access the Platform
 ```
 OpenSearch Dashboards: http://localhost:5601
-Default credentials: admin / admin (change immediately)
+Analytics API Docs:    http://localhost:8000/docs
+Default credentials:   admin / admin (change immediately)
 ```
 
 ### 2. Your First Search
@@ -148,47 +39,6 @@ Default credentials: admin / admin (change immediately)
 
 ---
 
-## Common Use Cases
-
-### Use Case 1: Monitor Application Errors
-**Goal**: Track error rates across services
-
-**Steps**:
-1. Create search: `level:ERROR`
-2. Create time series visualization counting errors
-3. Add to dashboard
-4. Set up alert when errors > 100 in 5 minutes
-
-**Outcome**: Real-time error monitoring with automated alerts
-
----
-
-### Use Case 2: Investigate Performance Issues
-**Goal**: Find slow API requests
-
-**Steps**:
-1. Create search: `response_time_ms:>1000`
-2. Add filters for specific service
-3. Sort by response time descending
-4. Analyze common patterns in slow requests
-
-**Outcome**: Identify bottlenecks and optimization opportunities
-
----
-
-### Use Case 3: Security Audit
-**Goal**: Monitor authentication failures
-
-**Steps**:
-1. Create search: `event:"authentication_failed"`
-2. Aggregate by source IP
-3. Create visualization showing top failed IPs
-4. Set alert for suspicious patterns
-
-**Outcome**: Detect potential security threats
-
----
-
 ## Search Cheat Sheet
 
 | Query | Description |
@@ -202,6 +52,34 @@ Default credentials: admin / admin (change immediately)
 | `NOT level:DEBUG` | Negation |
 | `service:api*` | Wildcard |
 | `message:/timeout\|error/` | Regex |
+
+---
+
+## Common Use Cases
+
+### Monitor Application Errors
+**Goal**: Track error rates across services
+
+1. Create search: `level:ERROR`
+2. Create time series visualization counting errors
+3. Add to dashboard
+4. Set up alert when errors > 100 in 5 minutes
+
+### Investigate Performance Issues
+**Goal**: Find slow API requests
+
+1. Create search: `response_time_ms:>1000`
+2. Add filters for specific service
+3. Sort by response time descending
+4. Analyze common patterns in slow requests
+
+### Security Audit
+**Goal**: Monitor authentication failures
+
+1. Create search: `event:"authentication_failed"`
+2. Aggregate by source IP
+3. Create visualization showing top failed IPs
+4. Set alert for suspicious patterns
 
 ---
 
@@ -230,60 +108,34 @@ Default credentials: admin / admin (change immediately)
 ## Common Questions
 
 **Q: How far back can I search?**
-A: Depends on retention policy. Default is 30 days, configurable.
+A: Depends on retention policy. Default is 30 days, configurable via ILM policies.
 
 **Q: Can I export search results?**
-A: Yes, use the "Export" button or API.
+A: Yes, use the "Export" button in Dashboards or the Analytics API.
 
 **Q: How do I share a dashboard?**
 A: Use the "Share" button to get a shareable link.
 
-**Q: Can I schedule reports?**
-A: Yes, via the reporting feature (if enabled).
-
 **Q: What's the difference between Discover and Dashboard?**
-A: Discover is for ad-hoc searching, Dashboard is for monitoring.
+A: Discover is for ad-hoc searching. Dashboard is for monitoring with saved visualizations.
 
 ---
 
 ## Learning Path
 
 **Beginner** (Week 1):
-1. Complete Getting Started guide
-2. Practice basic searches
-3. Create your first visualization
-4. Build a simple dashboard
+1. Practice basic searches in Discover
+2. Create your first visualization
+3. Build a simple dashboard
 
 **Intermediate** (Week 2-3):
-1. Master advanced search syntax
+1. Master advanced search syntax (Boolean, range, regex)
 2. Create complex visualizations
-3. Set up alerts
-4. Organize saved searches
+3. Set up alerts via the alerting service
+4. Use the Analytics API for programmatic access
 
 **Advanced** (Week 4+):
 1. Build comprehensive monitoring dashboards
 2. Optimize query performance
-3. Create parameterized searches
-4. Integrate with external tools via API
-
----
-
-## Additional Resources
-
-- [Video Tutorials](./video-tutorials.md) (Coming soon)
-- [FAQ](./faq.md)
-- [Keyboard Shortcuts](./keyboard-shortcuts.md)
-- [Troubleshooting Guide](../operations/troubleshooting.md)
-
----
-
-## Feedback and Support
-
-Found an issue or have a suggestion? Please:
-- Check [Known Issues](../operations/known-issues.md)
-- Review [Troubleshooting Guide](../operations/troubleshooting.md)
-- Contact your platform administrator
-
----
-
-**Last Updated**: 2026-02-04
+3. Integrate with external tools via API and webhooks
+4. Configure custom alert rules and ILM policies

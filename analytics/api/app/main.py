@@ -15,7 +15,8 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.opensearch_client import OpenSearchClient
-from app.routers import health, search, aggregations, indices
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.routers import health, search, aggregations, indices, auth
 
 # ============================================================================
 # Logging Configuration
@@ -78,13 +79,31 @@ app = FastAPI(
 # ============================================================================
 
 # CORS Middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# In production/staging, restrict CORS to configured origins only.
+# In development, allow all origins for convenience.
+if settings.environment in ("production", "staging") and settings.cors_origins != "*":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins_list,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+# Rate Limiting Middleware
+if settings.rate_limit_enabled:
+    app.add_middleware(
+        RateLimitMiddleware,
+        requests_per_minute=settings.rate_limit_per_minute,
+    )
 
 # ============================================================================
 # Exception Handlers
@@ -122,6 +141,7 @@ async def global_exception_handler(request, exc):
 
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["Health"])
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(search.router, prefix=settings.api_root_path, tags=["Search"])
 app.include_router(aggregations.router, prefix=settings.api_root_path, tags=["Aggregations"])
 app.include_router(indices.router, prefix=f"{settings.api_root_path}/indices", tags=["Index Management"])

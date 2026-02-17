@@ -1,0 +1,100 @@
+# OpenSearch Configuration - Secure Mode
+#
+# Used when running with docker-compose.security.yml overlay.
+# Enables TLS for transport and HTTP layers.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+# ============================================================================
+# Network Settings
+# ============================================================================
+
+network.host: 0.0.0.0
+network.bind_host: 0.0.0.0
+network.publish_host: _eth0_
+
+http.port: 9200
+http.max_header_size: 16kb
+transport.port: 9300
+
+# ============================================================================
+# Node Roles
+# ============================================================================
+
+node.roles: [ cluster_manager, data, ingest ]
+
+# ============================================================================
+# Memory and Storage
+# ============================================================================
+
+path.data: /usr/share/opensearch/data
+path.logs: /usr/share/opensearch/logs
+
+# ============================================================================
+# Index Settings
+# ============================================================================
+
+action.auto_create_index: true
+
+# ============================================================================
+# Performance Tuning
+# ============================================================================
+
+thread_pool.write.queue_size: 1000
+thread_pool.search.queue_size: 1000
+
+indices.breaker.total.limit: 70%
+indices.breaker.fielddata.limit: 40%
+indices.breaker.request.limit: 40%
+
+# ============================================================================
+# Security Settings (ENABLED)
+# ============================================================================
+
+# Transport layer TLS
+plugins.security.ssl.transport.pemcert_filepath: certs/node.pem
+plugins.security.ssl.transport.pemkey_filepath: certs/node-key.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: certs/ca.pem
+plugins.security.ssl.transport.enforce_hostname_verification: false
+
+# HTTP layer TLS
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: certs/node.pem
+plugins.security.ssl.http.pemkey_filepath: certs/node-key.pem
+plugins.security.ssl.http.pemtrustedcas_filepath: certs/ca.pem
+
+# Admin certificate DN (for securityadmin.sh)
+plugins.security.authcz.admin_dn:
+  - "CN=Admin,OU=Analytics,O=Vaultize,L=SanFrancisco,ST=CA,C=US"
+
+# Allow initialization of security index
+plugins.security.allow_default_init_securityindex: true
+plugins.security.allow_unsafe_democertificates: false
+
+# Audit logging
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+
+# ============================================================================
+# Cluster Recovery
+# ============================================================================
+
+gateway.recover_after_nodes: 2
+gateway.expected_nodes: 3
+cluster.routing.allocation.node_concurrent_recoveries: 2
+indices.recovery.max_bytes_per_sec: 40mb
+
+# ============================================================================
+# Logging
+# ============================================================================
+
+logger.level: INFO
+
+# ============================================================================
+# Compatibility
+# ============================================================================
+
+compatibility.override_main_response_version: true

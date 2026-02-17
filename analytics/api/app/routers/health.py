@@ -8,10 +8,13 @@ License: Apache 2.0
 """
 
 import logging
+from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, Depends
-from opensearchpy import OpenSearch
+from fastapi.responses import JSONResponse
+from opensearchpy import OpenSearch, exceptions as os_exceptions
 
 from app.config import settings
+from app.models.common import APIResponse
 from app.models.health import HealthResponse, OpenSearchHealthResponse
 from app.opensearch_client import get_opensearch
 
@@ -64,9 +67,10 @@ async def health_check():
 
     except Exception as e:
         logger.error(f"Health check failed: {e}")
-        # Return unhealthy status but don't raise HTTP error
+        # Return degraded status but don't raise HTTP error
+        # (API itself is up, but OpenSearch is unreachable)
         return HealthResponse(
-            status="unhealthy",
+            status="degraded",
             version=settings.app_version,
             environment=settings.environment,
             opensearch=None
@@ -94,18 +98,16 @@ async def readiness_check():
         if health.get("status") in ["green", "yellow"]:
             return {"status": "ready"}
         else:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=503,
-                detail="Service not ready: OpenSearch cluster is red"
+                content={"status": "not_ready", "reason": "OpenSearch cluster is red"}
             )
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Readiness check failed: {e}")
-        raise HTTPException(
+        return JSONResponse(
             status_code=503,
-            detail=f"Service not ready: {str(e)}"
+            content={"status": "not_ready", "reason": str(e)}
         )
 
 
@@ -121,6 +123,38 @@ async def liveness_check():
     """
     # Simple liveness check - if we can respond, we're alive
     return {"status": "alive"}
+
+
+@router.get("/cluster", response_model=APIResponse[Dict[str, Any]])
+async def cluster_health():
+    """
+    Detailed OpenSearch cluster health (wrapped in standard API response).
+
+    Returns detailed information about the OpenSearch cluster in the
+    standard APIResponse format.
+
+    Returns:
+        APIResponse[Dict]: Cluster health details
+
+    Raises:
+        HTTPException: If unable to connect to OpenSearch (503)
+    """
+    try:
+        client = get_opensearch()
+        health = client.cluster.health()
+
+        return APIResponse(
+            status="success",
+            data=health,
+            message=f"Cluster status: {health.get('status', 'unknown')}"
+        )
+
+    except (os_exceptions.ConnectionError, Exception) as e:
+        logger.error(f"Failed to get cluster health: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail=f"Unable to connect to OpenSearch: {str(e)}"
+        )
 
 
 @router.get("/opensearch")

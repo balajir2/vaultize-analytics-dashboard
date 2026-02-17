@@ -212,6 +212,56 @@ async def simple_search(
     return await search_logs(search_req)
 
 
+@router.get("/search/count", response_model=APIResponse[Dict[str, Any]])
+async def count_documents(
+    q: str = Query(default="*", description="Search query string"),
+    indices: str = Query(default="logs-*", description="Comma-separated index patterns"),
+):
+    """
+    Count documents matching a query.
+
+    Returns the number of documents matching the query across specified indices.
+
+    Args:
+        q: Lucene query string
+        indices: Comma-separated index patterns
+
+    Returns:
+        APIResponse[Dict]: Document count
+
+    Example:
+        GET /api/v1/search/count?q=level:ERROR&indices=logs-*
+    """
+    try:
+        client = get_opensearch()
+
+        body = {"query": {"query_string": {"query": q, "default_operator": "AND"}}}
+
+        response = client.count(
+            index=indices,
+            body=body,
+        )
+
+        return APIResponse(
+            status="success",
+            data={"count": response["count"]},
+            message=f"Found {response['count']} matching documents"
+        )
+
+    except os_exceptions.RequestError as e:
+        logger.error(f"Invalid count query: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid query: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Count failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Count failed: {str(e)}"
+        )
+
+
 @router.get("/indices", response_model=APIResponse[List[str]])
 async def list_indices(
     pattern: str = Query(default="logs-*", description="Index pattern to match")

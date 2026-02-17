@@ -1,0 +1,39 @@
+# OpenSearch Security - Main Configuration
+#
+# Configures authentication and authorization backends.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "config"
+  config_version: 2
+
+config:
+  dynamic:
+    http:
+      anonymous_auth_enabled: false
+      xff:
+        enabled: false
+
+    authc:
+      # HTTP Basic authentication against internal user database
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: basic
+          challenge: true
+        authentication_backend:
+          type: intern
+
+    authz:
+      # Internal role-based authorization
+      roles_from_internal:
+        description: "Authorize via internal roles"
+        http_enabled: true
+        transport_enabled: true
+        authorization_backend:
+          type: intern

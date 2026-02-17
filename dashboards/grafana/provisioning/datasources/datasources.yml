@@ -1,0 +1,41 @@
+# Grafana Datasource Provisioning
+#
+# Auto-provisioned datasources for the Vaultize Analytics Platform.
+# Grafana loads this at startup — no manual setup required.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+apiVersion: 1
+
+datasources:
+  # --------------------------------------------------------------------------
+  # OpenSearch (Primary: Log Analytics)
+  # --------------------------------------------------------------------------
+  - name: OpenSearch
+    type: grafana-opensearch-datasource
+    access: proxy
+    url: http://opensearch-node-1:9200
+    isDefault: true
+    jsonData:
+      database: "logs-*"
+      flavor: opensearch
+      version: "2.11.1"
+      timeField: "@timestamp"
+      logMessageField: message
+      logLevelField: level
+      maxConcurrentShardRequests: 5
+    editable: true
+
+  # --------------------------------------------------------------------------
+  # Prometheus (Optional: Metrics)
+  # --------------------------------------------------------------------------
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: false
+    jsonData:
+      timeInterval: "15s"
+      httpMethod: POST
+    editable: true

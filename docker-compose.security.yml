@@ -1,0 +1,130 @@
+#
+# Vaultize Analytics Platform - Security Override
+#
+# Enables TLS/SSL and OpenSearch security plugin.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.security.yml up -d
+#
+# Prerequisites:
+#   1. Generate certificates: python scripts/ops/generate_certs.py
+#   2. First start requires security initialization: scripts/ops/initialize_security.sh
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+#
+
+services:
+  opensearch-node-1:
+    environment:
+      - cluster.name=vaultize-cluster
+      - node.name=opensearch-node-1
+      - discovery.seed_hosts=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - cluster.initial_cluster_manager_nodes=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      # Security plugin ENABLED (no DISABLE_SECURITY_PLUGIN)
+    volumes:
+      - opensearch-data-1:/usr/share/opensearch/data
+      - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./infrastructure/certs/ca.pem:/usr/share/opensearch/config/certs/ca.pem:ro
+      - ./infrastructure/certs/node.pem:/usr/share/opensearch/config/certs/node.pem:ro
+      - ./infrastructure/certs/node-key.pem:/usr/share/opensearch/config/certs/node-key.pem:ro
+      - ./infrastructure/certs/admin.pem:/usr/share/opensearch/config/certs/admin.pem:ro
+      - ./infrastructure/certs/admin-key.pem:/usr/share/opensearch/config/certs/admin-key.pem:ro
+      - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  opensearch-node-2:
+    environment:
+      - cluster.name=vaultize-cluster
+      - node.name=opensearch-node-2
+      - discovery.seed_hosts=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - cluster.initial_cluster_manager_nodes=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+    volumes:
+      - opensearch-data-2:/usr/share/opensearch/data
+      - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./infrastructure/certs/ca.pem:/usr/share/opensearch/config/certs/ca.pem:ro
+      - ./infrastructure/certs/node.pem:/usr/share/opensearch/config/certs/node.pem:ro
+      - ./infrastructure/certs/node-key.pem:/usr/share/opensearch/config/certs/node-key.pem:ro
+      - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  opensearch-node-3:
+    environment:
+      - cluster.name=vaultize-cluster
+      - node.name=opensearch-node-3
+      - discovery.seed_hosts=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - cluster.initial_cluster_manager_nodes=opensearch-node-1,opensearch-node-2,opensearch-node-3
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+    volumes:
+      - opensearch-data-3:/usr/share/opensearch/data
+      - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./infrastructure/certs/ca.pem:/usr/share/opensearch/config/certs/ca.pem:ro
+      - ./infrastructure/certs/node.pem:/usr/share/opensearch/config/certs/node.pem:ro
+      - ./infrastructure/certs/node-key.pem:/usr/share/opensearch/config/certs/node-key.pem:ro
+      - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  opensearch-dashboards:
+    environment:
+      - OPENSEARCH_HOSTS=["https://opensearch-node-1:9200"]
+      # Security dashboards plugin ENABLED (no DISABLE_SECURITY_DASHBOARDS_PLUGIN)
+    volumes:
+      - ./infrastructure/docker/opensearch-dashboards/opensearch_dashboards-secure.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+      - ./infrastructure/certs/ca.pem:/usr/share/opensearch-dashboards/config/certs/ca.pem:ro
+      - ./infrastructure/certs/node.pem:/usr/share/opensearch-dashboards/config/certs/node.pem:ro
+      - ./infrastructure/certs/node-key.pem:/usr/share/opensearch-dashboards/config/certs/node-key.pem:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:5601/api/status || exit 1"]
+
+  fluent-bit:
+    volumes:
+      - ./ingestion/configs/fluent-bit/fluent-bit-secure.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./ingestion/configs/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - ./ingestion/sample-logs:/var/log/app-logs:ro
+      - ./infrastructure/certs/ca.pem:/fluent-bit/certs/ca.pem:ro
+
+  analytics-api:
+    environment:
+      - OPENSEARCH_HOST=opensearch-node-1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_SCHEME=https
+      - OPENSEARCH_USER=api_user
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_API_PASSWORD:-apiuser}
+      - OPENSEARCH_VERIFY_CERTS=false
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - LOG_LEVEL=INFO
+
+  alerting-service:
+    environment:
+      - OPENSEARCH_HOST=opensearch-node-1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_SCHEME=https
+      - OPENSEARCH_USER=api_user
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_API_PASSWORD:-apiuser}
+      - OPENSEARCH_VERIFY_CERTS=false
+      - ALERTING_API_HOST=0.0.0.0
+      - ALERTING_API_PORT=8001
+      - ALERT_RULES_DIR=/app/alert-rules
+      - LOG_LEVEL=INFO

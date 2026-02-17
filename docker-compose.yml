@@ -180,6 +180,7 @@ services:
     volumes:
       - ./ingestion/configs/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - ./ingestion/configs/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - ./ingestion/sample-logs:/var/log/app-logs:ro  # Shared log files for file-based ingestion
       - /var/log:/var/log:ro  # Host logs (optional)
       - /var/lib/docker/containers:/var/lib/docker/containers:ro  # Docker container logs
     ports:
@@ -300,15 +301,25 @@ services:
     environment:
       - OPENSEARCH_HOST=opensearch-node-1
       - OPENSEARCH_PORT=9200
+      - ALERTING_API_HOST=0.0.0.0
+      - ALERTING_API_PORT=8001
+      - ALERT_RULES_DIR=/app/alert-rules
       - LOG_LEVEL=INFO
     volumes:
-      - ./analytics/alerting:/app:ro
       - ./configs/alert-rules:/app/alert-rules:ro
+    ports:
+      - "${ALERTING_API_PORT:-8001}:8001"
     networks:
       - vaultize-network
     depends_on:
       opensearch-node-1:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/health/liveness || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
     profiles:
       - services  # Only start when 'services' profile is activated
@@ -334,6 +345,7 @@ services:
 #   - Grafana: http://localhost:3000 (admin/admin)
 #   - Prometheus: http://localhost:9090
 #   - Analytics API: http://localhost:8000/docs
+#   - Alerting Service: http://localhost:8001/docs
 #
 # Logs:
 #   docker compose logs -f [service-name]
