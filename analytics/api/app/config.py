@@ -115,7 +115,7 @@ class Settings(BaseSettings):
     @validator("environment")
     def validate_environment(cls, v):
         """Ensure environment is valid."""
-        allowed = ["development", "staging", "production"]
+        allowed = ["development", "staging", "production", "test"]
         if v not in allowed:
             raise ValueError(f"Environment must be one of: {allowed}")
         return v
@@ -173,13 +173,18 @@ def validate_settings():
     if not settings.opensearch_host:
         errors.append("OPENSEARCH_HOST is required")
 
-    # Security warnings for production
-    if settings.environment == "production":
+    # Security warnings for production/staging
+    if settings.environment in ("production", "staging"):
         if settings.debug:
             warnings.append("DEBUG is enabled in production (security risk)")
 
         if settings.secret_key == "CHANGE_ME_IN_PRODUCTION":
-            errors.append("API_SECRET_KEY must be changed in production")
+            errors.append("API_SECRET_KEY must be changed in production/staging")
+
+        if settings.auth_enabled and settings.auth_admin_password == "admin":
+            errors.append(
+                "AUTH_ADMIN_PASSWORD must be changed when auth is enabled in production/staging"
+            )
 
         if settings.opensearch_scheme == "http":
             warnings.append("Using HTTP for OpenSearch in production (use HTTPS)")

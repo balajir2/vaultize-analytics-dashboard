@@ -76,3 +76,39 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+def validate_settings():
+    """
+    Validate critical settings and warn about insecure configurations.
+
+    Raises:
+        ValueError: If critical settings are missing or invalid
+    """
+    errors = []
+    warnings = []
+
+    if settings.environment in ("production", "staging"):
+        if settings.secret_key == "CHANGE_ME_IN_PRODUCTION":
+            errors.append("API_SECRET_KEY must be changed in production/staging")
+
+        if settings.debug:
+            warnings.append("DEBUG is enabled in production (security risk)")
+
+        if settings.opensearch_scheme == "http":
+            warnings.append("Using HTTP for OpenSearch in production (use HTTPS)")
+
+    if warnings:
+        logger = logging.getLogger(__name__)
+        for warning in warnings:
+            logger.warning(f"Configuration warning: {warning}")
+
+    if errors:
+        raise ValueError(f"Configuration errors: {', '.join(errors)}")
+
+
+validate_settings()
