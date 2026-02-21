@@ -1,7 +1,7 @@
 # Project TODO
 
 > **Last Updated**: 2026-02-22
-> **Status**: All milestones complete. Platform at 100%. Security hardening complete (8 commits).
+> **Status**: All milestones complete. Platform at 100%. Security hardening complete (11 commits).
 
 ---
 
@@ -55,6 +55,11 @@
 - [x] Commit 8: Rate limiter documentation (single-instance, proxy-aware, Redis upgrade path)
 - [x] RT-020 through RT-026 regression tests (59 new tests)
 - [x] Full regression suite: 320 passed, API: 103 passed, Alerting: 105 passed (528 total)
+- [x] Commit 9: Enforce AUTH_ENABLED=true in production/staging (both config.py files)
+- [x] Commit 10: Replace JWT error detail leakage with generic message (both auth.py files)
+- [x] Commit 11: Fix dev CORS wildcard+credentials incompatibility (allow_credentials=False)
+- [x] RT-027 through RT-029 regression tests (16 new tests)
+- [x] Full regression suite: 336 passed, API: 103 passed, Alerting: 105 passed (544 total)
 
 ### Pending
 - [ ] Manual UI testing of full application stack
@@ -91,7 +96,7 @@
 - [x] Grafana dashboard provisioning (platform-health.json)
 
 ### Testing - All Complete
-- [x] Regression suite: 320 tests (RT-001 through RT-026)
+- [x] Regression suite: 336 tests (RT-001 through RT-029)
 - [x] API unit tests: 103 passed
 - [x] Alerting unit tests: 105 passed
 - [x] E2E, integration, and performance test frameworks
@@ -107,4 +112,4 @@
 **Session 2026-02-17 (Session 1)**: Completed all 10 phases of final development plan. ~40 new files created. Platform at 100%.
 **Session 2026-02-17 (Session 2)**: Fixed 7 API test failures, rationalized all documentation, created UI testing guide.
 **Session 2026-02-21**: Prometheus metrics integration — instrumentator for API/Alerting, opensearch-exporter sidecar, Grafana service metrics panels, RT-019 (23 tests), documentation updates, integration guide.
-**Session 2026-02-22**: Security hardening (8 commits from Codex code review). Auth enforcement on API/alerting routes, startup config hardening, CORS fix, error detail leakage removal, notification aggregation bug fix, endpoint dedup, rate limiter docs. RT-020–RT-026 (59 new tests). Total: 528 tests.
+**Session 2026-02-22**: Security hardening (11 commits from Codex code reviews). Auth enforcement on API/alerting routes, startup config hardening, CORS fix, error detail leakage removal, notification aggregation bug fix, endpoint dedup, rate limiter docs, auth enforcement in prod/staging, JWT error leakage fix, dev CORS wildcard fix. RT-020–RT-029 (75 new tests). Total: 544 tests.

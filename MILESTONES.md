@@ -278,7 +278,7 @@
 
 **Success Criteria**:
 - ✅ Test suite ready for CI/CD (pytest configured, all tests deterministic)
-- ✅ All 469 tests passing (103 API + 105 alerting + 261 regression)
+- ✅ All 544 tests passing (103 API + 105 alerting + 336 regression)
 - ✅ Test coverage exceeds 80% requirement (89% API, 81% alerting)
 - ✅ Documentation complete — 34 docs, zero dead links
 - ✅ New engineer can deploy system following runbook (quickstart guide ready)
@@ -290,7 +290,7 @@
 **Notes**:
 - Analytics API: 103 tests, 89% coverage (all passing, 0 failures)
 - Alerting service: 105 tests, 81% coverage
-- Regression suite: 261 tests across RT-001 through RT-019
+- Regression suite: 336 tests across RT-001 through RT-029
 - Documentation rationalized on 2026-02-17: removed 6 stub files, consolidated into single hub
 
 ---

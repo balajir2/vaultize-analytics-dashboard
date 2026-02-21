@@ -8,14 +8,14 @@
 ## Session 2026-02-22 (Security Hardening)
 
 **Date**: 2026-02-22
-**Duration**: Single session
-**Status**: 8 security hardening commits complete
+**Duration**: Multiple sessions
+**Status**: 11 security hardening commits complete (8 initial + 3 Codex followup)
 
 ### Summary
 
-Implemented 8 security fixes identified by Codex code review. All changes are backward-compatible — `AUTH_ENABLED=false` (default) means auth dependencies are no-ops, so dev workflow is unchanged.
+Implemented 11 security fixes identified by two rounds of Codex code review. All changes are backward-compatible — `AUTH_ENABLED=false` (default) means auth dependencies are no-ops, so dev workflow is unchanged.
 
-### Commits
+### Commits (Round 1 — Initial Codex Review)
 
 1. **Enforce auth on API routes** — `Depends(get_current_user)` on search/aggregations/indices routers; `Depends(require_admin)` on DELETE index
 2. **Enforce auth on alerting API** — Added `require_admin()` to alerting auth; applied to reload/trigger endpoints
@@ -26,37 +26,43 @@ Implemented 8 security fixes identified by Codex code review. All changes are ba
 7. **Remove duplicate endpoint** — `list_indices` removed from search.py
 8. **Rate limiter docs** — Single-instance, proxy-aware, Redis upgrade path
 
+### Commits (Round 2 — Codex Followup Review)
+
+9. **Enforce AUTH_ENABLED in production/staging** — Both `validate_settings()` now error if `AUTH_ENABLED=false` in production/staging
+10. **Stop JWT error detail leakage** — Generic "Invalid authentication token" message; full error logged via `logger.warning` with `exc_info=True`
+11. **Fix dev CORS wildcard+credentials** — `allow_credentials=False` in wildcard branch to avoid browser-incompatible combo
+
 ### Test Results
 
 | Suite | Count |
 |-------|-------|
-| Regression (RT-001–RT-026) | 320 passed |
+| Regression (RT-001–RT-029) | 336 passed |
 | Analytics API | 103 passed |
 | Alerting | 105 passed |
-| **Total** | **528 passed** |
+| **Total** | **544 passed** |
 
-### Files Modified (18 total)
+### Files Modified (21 total)
 
-- `analytics/api/app/main.py` — auth imports + router dependencies
+- `analytics/api/app/main.py` — auth imports, router dependencies, CORS wildcard fix
 - `analytics/api/app/routers/indices.py` — require_admin on DELETE + error detail removal
 - `analytics/api/app/routers/search.py` — error detail removal + duplicate endpoint removed
 - `analytics/api/app/routers/aggregations.py` — error detail removal
 - `analytics/api/app/routers/health.py` — error detail removal
-- `analytics/api/app/config.py` — staging checks, "test" env, password validation, CORS error
+- `analytics/api/app/config.py` — staging checks, "test" env, password validation, CORS error, auth enforcement
+- `analytics/api/app/middleware/auth.py` — generic JWT error message
 - `analytics/api/app/middleware/rate_limit.py` — expanded docstring
 - `analytics/alerting/app/main.py` — auth imports + router dependencies
-- `analytics/alerting/app/middleware/auth.py` — added require_admin()
+- `analytics/alerting/app/middleware/auth.py` — added require_admin(), generic JWT error message
 - `analytics/alerting/app/routers/alerts.py` — require_admin on reload/trigger
-- `analytics/alerting/app/config.py` — validate_settings() added
+- `analytics/alerting/app/config.py` — validate_settings() with auth enforcement
 - `analytics/alerting/app/models/alert_event.py` — notification_results field
 - `analytics/alerting/app/services/scheduler.py` — per-action result collection
 - `.env.example` — AUTH_ENABLED, AUTH_ADMIN_USERNAME, API_SECRET_KEY
-- 7 new regression test files (RT-020 through RT-026)
+- 10 new regression test files (RT-020 through RT-029)
 
 ### Next Steps
 
 - Manual UI testing of full application stack (test-tracker.html created previously)
-- Push security hardening commits to remote
 
 ---
 

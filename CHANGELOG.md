@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1] - 2026-02-22 (Codex Review Followup)
+
+### Fixed
+- **AUTH_ENABLED not enforced in production/staging**: `validate_settings()` in both API and alerting config.py now errors if `AUTH_ENABLED=false` in production/staging
+- **JWT error detail leakage**: Both auth middleware files now return generic "Invalid authentication token" instead of `f"Invalid token: {e}"`; full error logged server-side via `logger.warning` with `exc_info=True`
+- **Dev CORS wildcard+credentials incompatibility**: Wildcard CORS branch now uses `allow_credentials=False` to avoid browser-incompatible combo; warning log preserved
+
+### Added
+- **RT-027 through RT-029 regression tests** (16 new tests)
+
+### Changed
+- Test counts: 544 total (103 API + 105 Alerting + 336 Regression), up from 528
+
+---
+
 ## [1.2.0] - 2026-02-22 (Security Hardening)
 
 ### Added
