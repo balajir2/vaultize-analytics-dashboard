@@ -13,6 +13,7 @@ datasources:
   # OpenSearch (Primary: Log Analytics)
   # --------------------------------------------------------------------------
   - name: OpenSearch
+    uid: opensearch
     type: grafana-opensearch-datasource
     access: proxy
     url: http://opensearch-node-1:9200
@@ -31,6 +32,7 @@ datasources:
   # Prometheus (Optional: Metrics)
   # --------------------------------------------------------------------------
   - name: Prometheus
+    uid: prometheus
     type: prometheus
     access: proxy
     url: http://prometheus:9090

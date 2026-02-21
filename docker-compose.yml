@@ -204,8 +204,8 @@ services:
       - '--es.uri=http://opensearch-node-1:9200'
       - '--es.all'
       - '--es.indices'
-      - '--es.cluster_settings'
       - '--es.shards'
+      - '--collector.clustersettings'
     ports:
       - "${OPENSEARCH_EXPORTER_PORT:-9114}:9114"
     networks:
