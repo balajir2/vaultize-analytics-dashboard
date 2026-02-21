@@ -9,7 +9,9 @@ License: Apache 2.0
 
 import logging
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
+
+from app.middleware.auth import require_admin
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +74,7 @@ async def get_rule_status(request: Request, rule_name: str):
     }
 
 
-@router.post("/rules/{rule_name}/trigger")
+@router.post("/rules/{rule_name}/trigger", dependencies=[Depends(require_admin)])
 async def trigger_rule(request: Request, rule_name: str):
     """Manually trigger an alert check."""
     scheduler = _get_scheduler(request)
@@ -97,7 +99,7 @@ async def get_history(
     return {"status": "success", "data": events}
 
 
-@router.post("/rules/reload")
+@router.post("/rules/reload", dependencies=[Depends(require_admin)])
 async def reload_rules(request: Request):
     """Force reload of alert rule files."""
     scheduler = _get_scheduler(request)

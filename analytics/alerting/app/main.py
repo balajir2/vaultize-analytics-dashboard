@@ -10,10 +10,11 @@ License: Apache 2.0
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 
 from app.config import settings
+from app.middleware.auth import get_current_user
 from app.opensearch_client import OpenSearchClient
 from app.notifiers.webhook import WebhookNotifier
 from app.routers import health, alerts
@@ -98,7 +99,7 @@ async def global_exception_handler(request, exc):
 
 
 app.include_router(health.router, prefix="/health", tags=["Health"])
-app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["Alerts"])
+app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["Alerts"], dependencies=[Depends(get_current_user)])
 
 # Prometheus metrics
 from prometheus_fastapi_instrumentator import Instrumentator

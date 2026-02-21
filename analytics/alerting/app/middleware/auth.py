@@ -62,3 +62,23 @@ async def get_current_user(
             detail=f"Invalid token: {e}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+async def require_admin(
+    user: Optional[dict] = Depends(get_current_user),
+) -> Optional[dict]:
+    """
+    FastAPI dependency that requires admin role.
+
+    When AUTH_ENABLED=false, returns None (all access allowed).
+    """
+    if not settings.auth_enabled:
+        return None
+
+    if user is None or user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
+
+    return user
