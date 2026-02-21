@@ -1,7 +1,7 @@
 # Project TODO
 
-> **Last Updated**: 2026-02-21
-> **Status**: All milestones complete. Platform at 100%. Prometheus metrics fully integrated.
+> **Last Updated**: 2026-02-22
+> **Status**: All milestones complete. Platform at 100%. Security hardening complete (8 commits).
 
 ---
 
@@ -44,6 +44,18 @@
 - [x] Updated all documentation to reflect metrics integration
 - [x] Created integration guide for log-generating systems
 
+### Completed Today (2026-02-22)
+- [x] Commit 1: Enforce auth on protected API routes (Depends(get_current_user) on search/aggregations/indices routers)
+- [x] Commit 2: Enforce auth on alerting management API (require_admin on reload/trigger, get_current_user on alerts router)
+- [x] Commit 3: Harden startup config (production+staging checks, "test" environment, alerting validate_settings)
+- [x] Commit 4: Fix CORS credential handling (wildcard → error in production, dev warning)
+- [x] Commit 5: Remove exception detail leakage (12 str(e) replacements across 4 routers)
+- [x] Commit 6: Fix alert notification result aggregation (per-action results list, aggregate status)
+- [x] Commit 7: Resolve index endpoint duplication (removed list_indices from search.py)
+- [x] Commit 8: Rate limiter documentation (single-instance, proxy-aware, Redis upgrade path)
+- [x] RT-020 through RT-026 regression tests (59 new tests)
+- [x] Full regression suite: 320 passed, API: 103 passed, Alerting: 105 passed (528 total)
+
 ### Pending
 - [ ] Manual UI testing of full application stack
 
@@ -79,7 +91,7 @@
 - [x] Grafana dashboard provisioning (platform-health.json)
 
 ### Testing - All Complete
-- [x] Regression suite: 261 tests (RT-001 through RT-019)
+- [x] Regression suite: 320 tests (RT-001 through RT-026)
 - [x] API unit tests: 103 passed
 - [x] Alerting unit tests: 105 passed
 - [x] E2E, integration, and performance test frameworks
@@ -95,3 +107,4 @@
 **Session 2026-02-17 (Session 1)**: Completed all 10 phases of final development plan. ~40 new files created. Platform at 100%.
 **Session 2026-02-17 (Session 2)**: Fixed 7 API test failures, rationalized all documentation, created UI testing guide.
 **Session 2026-02-21**: Prometheus metrics integration — instrumentator for API/Alerting, opensearch-exporter sidecar, Grafana service metrics panels, RT-019 (23 tests), documentation updates, integration guide.
+**Session 2026-02-22**: Security hardening (8 commits from Codex code review). Auth enforcement on API/alerting routes, startup config hardening, CORS fix, error detail leakage removal, notification aggregation bug fix, endpoint dedup, rate limiter docs. RT-020–RT-026 (59 new tests). Total: 528 tests.

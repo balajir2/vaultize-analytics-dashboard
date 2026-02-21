@@ -5,6 +5,61 @@
 
 ---
 
+## Session 2026-02-22 (Security Hardening)
+
+**Date**: 2026-02-22
+**Duration**: Single session
+**Status**: 8 security hardening commits complete
+
+### Summary
+
+Implemented 8 security fixes identified by Codex code review. All changes are backward-compatible — `AUTH_ENABLED=false` (default) means auth dependencies are no-ops, so dev workflow is unchanged.
+
+### Commits
+
+1. **Enforce auth on API routes** — `Depends(get_current_user)` on search/aggregations/indices routers; `Depends(require_admin)` on DELETE index
+2. **Enforce auth on alerting API** — Added `require_admin()` to alerting auth; applied to reload/trigger endpoints
+3. **Harden startup config** — Production+staging checks (secret_key, admin password); "test" env allowed; alerting gets `validate_settings()`
+4. **Fix CORS credential handling** — Wildcard → error in prod/staging; dev-mode warning log
+5. **Remove exception detail leakage** — 12 `str(e)` replacements in 500/503 responses across 4 routers
+6. **Fix notification aggregation** — Per-action results list; aggregate status (success/partial/failed)
+7. **Remove duplicate endpoint** — `list_indices` removed from search.py
+8. **Rate limiter docs** — Single-instance, proxy-aware, Redis upgrade path
+
+### Test Results
+
+| Suite | Count |
+|-------|-------|
+| Regression (RT-001–RT-026) | 320 passed |
+| Analytics API | 103 passed |
+| Alerting | 105 passed |
+| **Total** | **528 passed** |
+
+### Files Modified (18 total)
+
+- `analytics/api/app/main.py` — auth imports + router dependencies
+- `analytics/api/app/routers/indices.py` — require_admin on DELETE + error detail removal
+- `analytics/api/app/routers/search.py` — error detail removal + duplicate endpoint removed
+- `analytics/api/app/routers/aggregations.py` — error detail removal
+- `analytics/api/app/routers/health.py` — error detail removal
+- `analytics/api/app/config.py` — staging checks, "test" env, password validation, CORS error
+- `analytics/api/app/middleware/rate_limit.py` — expanded docstring
+- `analytics/alerting/app/main.py` — auth imports + router dependencies
+- `analytics/alerting/app/middleware/auth.py` — added require_admin()
+- `analytics/alerting/app/routers/alerts.py` — require_admin on reload/trigger
+- `analytics/alerting/app/config.py` — validate_settings() added
+- `analytics/alerting/app/models/alert_event.py` — notification_results field
+- `analytics/alerting/app/services/scheduler.py` — per-action result collection
+- `.env.example` — AUTH_ENABLED, AUTH_ADMIN_USERNAME, API_SECRET_KEY
+- 7 new regression test files (RT-020 through RT-026)
+
+### Next Steps
+
+- Manual UI testing of full application stack (test-tracker.html created previously)
+- Push security hardening commits to remote
+
+---
+
 ## Session 2026-02-04 (Full Day)
 
 **Date**: 2026-02-04

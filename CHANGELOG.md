@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-02-22 (Security Hardening)
+
+### Added
+- **Auth enforcement on API routes**: `Depends(get_current_user)` on search, aggregations, and indices routers; `Depends(require_admin)` on DELETE index endpoint
+- **Auth enforcement on alerting API**: `require_admin()` function in alerting auth middleware; `Depends(get_current_user)` on alerts router; `Depends(require_admin)` on reload/trigger endpoints
+- **Startup config hardening**: Production+staging validation for secret_key, admin password with auth enabled, "test" environment value allowed; alerting service now has `validate_settings()`
+- **CORS credential fix**: Wildcard origins upgraded from warning to startup error in production/staging; dev-mode warning log for wildcard + credentials combo
+- **Notification results list**: `notification_results: List[Dict]` field on AlertEvent; aggregate status (success/partial/failed) computed from per-action results
+- **Rate limiter documentation**: Expanded docstring documenting single-instance limitation, proxy IP extraction, Redis upgrade path
+- **Security settings in .env.example**: AUTH_ENABLED, AUTH_ADMIN_USERNAME, AUTH_ADMIN_PASSWORD, API_SECRET_KEY documented
+- **RT-020 through RT-026 regression tests** (59 new tests)
+
+### Fixed
+- **Notification result overwrite bug**: Scheduler loop was overwriting `notification_sent`/`notification_status` on each action iteration; now collects all results
+- **Exception detail leakage**: 12 instances of `str(e)` removed from 500/503 HTTP responses across search.py, aggregations.py, indices.py, health.py
+
+### Removed
+- **Duplicate list_indices endpoint**: Removed `GET /api/v1/indices` from search.py (canonical endpoint is `GET /api/v1/indices/` in indices.py)
+
+### Changed
+- Test counts: 528 total (103 API + 105 Alerting + 320 Regression), up from 469
+
+---
+
 ## [1.1.0] - 2026-02-21 (Prometheus Metrics Integration)
 
 ### Added
