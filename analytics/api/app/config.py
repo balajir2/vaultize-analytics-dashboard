@@ -178,6 +178,9 @@ def validate_settings():
         if settings.debug:
             warnings.append("DEBUG is enabled in production (security risk)")
 
+        if not settings.auth_enabled:
+            errors.append("AUTH_ENABLED must be true in production/staging")
+
         if settings.secret_key == "CHANGE_ME_IN_PRODUCTION":
             errors.append("API_SECRET_KEY must be changed in production/staging")
 
