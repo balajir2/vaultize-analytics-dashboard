@@ -114,9 +114,10 @@ def decode_token(token: str) -> dict:
             )
         return payload
     except JWTError as e:
+        logger.warning("JWT validation failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {e}",
+            detail="Invalid authentication token",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
