@@ -28,6 +28,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     Limits are configured via:
     - API_RATE_LIMIT_ENABLED: Enable/disable rate limiting
     - API_RATE_LIMIT_PER_MINUTE: Maximum requests per minute per IP
+
+    Limitations:
+    - **Single-instance only**: The in-memory counter is not shared across
+      workers or replicas. Each uvicorn worker maintains its own counter,
+      so the effective limit is multiplied by the number of workers.
+    - **No proxy-aware IP extraction**: Uses ``request.client.host``
+      directly. Behind a reverse proxy (nginx, Traefik), this returns the
+      proxy IP unless the proxy sets ``X-Forwarded-For``. For correct
+      per-client limiting behind a proxy, configure the ASGI server to
+      trust proxy headers or add a ``ProxyHeadersMiddleware``.
+    - **Upgrade path**: For multi-replica deployments, replace this
+      middleware with a Redis-backed limiter (e.g., ``slowapi`` with
+      Redis storage) to share counters across instances.
     """
 
     def __init__(self, app, requests_per_minute: int = 1000):
