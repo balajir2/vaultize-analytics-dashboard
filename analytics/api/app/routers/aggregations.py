@@ -235,7 +235,7 @@ async def aggregate_logs(agg_req: AggregationRequest):
         logger.error(f"Aggregation failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Aggregation failed: {str(e)}"
+            detail="Aggregation failed due to an internal error"
         )
 
 

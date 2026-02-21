@@ -83,7 +83,7 @@ async def get_index_stats(
         logger.error(f"Failed to get index stats: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to get index stats: {str(e)}"
+            detail="Failed to get index stats due to an internal error"
         )
 
 
@@ -126,7 +126,7 @@ async def get_index_mappings(
         logger.error(f"Failed to get index mappings: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to get index mappings: {str(e)}"
+            detail="Failed to get index mappings due to an internal error"
         )
 
 
@@ -169,7 +169,7 @@ async def get_index_settings(
         logger.error(f"Failed to get index settings: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to get index settings: {str(e)}"
+            detail="Failed to get index settings due to an internal error"
         )
 
 
@@ -225,7 +225,7 @@ async def delete_index(
         logger.error(f"Failed to delete index: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to delete index: {str(e)}"
+            detail="Failed to delete index due to an internal error"
         )
 
 
@@ -272,5 +272,5 @@ async def list_all_indices(
         logger.error(f"Failed to list indices: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to list indices: {str(e)}"
+            detail="Failed to list indices due to an internal error"
         )

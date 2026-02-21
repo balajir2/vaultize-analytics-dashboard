@@ -107,7 +107,7 @@ async def readiness_check():
         logger.error(f"Readiness check failed: {e}")
         return JSONResponse(
             status_code=503,
-            content={"status": "not_ready", "reason": str(e)}
+            content={"status": "not_ready", "reason": "OpenSearch is unreachable"}
         )
 
 
@@ -153,7 +153,7 @@ async def cluster_health():
         logger.error(f"Failed to get cluster health: {e}")
         raise HTTPException(
             status_code=503,
-            detail=f"Unable to connect to OpenSearch: {str(e)}"
+            detail="Unable to connect to OpenSearch"
         )
 
 
@@ -191,5 +191,5 @@ async def opensearch_health():
         logger.error(f"Failed to get OpenSearch health: {e}")
         raise HTTPException(
             status_code=503,
-            detail=f"Unable to connect to OpenSearch: {str(e)}"
+            detail="Unable to connect to OpenSearch"
         )

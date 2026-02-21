@@ -171,7 +171,7 @@ async def search_logs(search_req: SearchRequest):
         logger.error(f"Search failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Search failed: {str(e)}"
+            detail="Search failed due to an internal error"
         )
 
 
@@ -258,7 +258,7 @@ async def count_documents(
         logger.error(f"Count failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Count failed: {str(e)}"
+            detail="Count failed due to an internal error"
         )
 
 
@@ -306,5 +306,5 @@ async def list_indices(
         logger.error(f"Failed to list indices: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to list indices: {str(e)}"
+            detail="Failed to list indices due to an internal error"
         )
