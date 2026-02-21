@@ -9,12 +9,13 @@ License: Apache 2.0
 
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.opensearch_client import OpenSearchClient
+from app.middleware.auth import get_current_user
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.routers import health, search, aggregations, indices, auth
 
@@ -142,9 +143,9 @@ async def global_exception_handler(request, exc):
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(search.router, prefix=settings.api_root_path, tags=["Search"])
-app.include_router(aggregations.router, prefix=settings.api_root_path, tags=["Aggregations"])
-app.include_router(indices.router, prefix=f"{settings.api_root_path}/indices", tags=["Index Management"])
+app.include_router(search.router, prefix=settings.api_root_path, tags=["Search"], dependencies=[Depends(get_current_user)])
+app.include_router(aggregations.router, prefix=settings.api_root_path, tags=["Aggregations"], dependencies=[Depends(get_current_user)])
+app.include_router(indices.router, prefix=f"{settings.api_root_path}/indices", tags=["Index Management"], dependencies=[Depends(get_current_user)])
 
 # ============================================================================
 # Prometheus Metrics

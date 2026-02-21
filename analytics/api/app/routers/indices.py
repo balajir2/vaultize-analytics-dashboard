@@ -9,9 +9,10 @@ License: Apache 2.0
 
 import logging
 from typing import Dict, Any, List
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from opensearchpy import exceptions as os_exceptions
 
+from app.middleware.auth import require_admin
 from app.models.common import APIResponse
 from app.opensearch_client import get_opensearch
 
@@ -172,7 +173,7 @@ async def get_index_settings(
         )
 
 
-@router.delete("/{index_name}", response_model=APIResponse[Dict[str, Any]])
+@router.delete("/{index_name}", response_model=APIResponse[Dict[str, Any]], dependencies=[Depends(require_admin)])
 async def delete_index(
     index_name: str = Path(..., description="Index name (no wildcards for safety)")
 ):
