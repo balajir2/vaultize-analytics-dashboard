@@ -193,7 +193,10 @@ def validate_settings():
             warnings.append("SSL certificate verification is disabled")
 
         if settings.cors_origins == "*":
-            warnings.append("CORS allows all origins (security risk)")
+            errors.append(
+                "CORS allows all origins in production/staging — "
+                "set API_CORS_ORIGINS to specific origins"
+            )
 
     # Log warnings
     if warnings:

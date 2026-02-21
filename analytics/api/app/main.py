@@ -91,6 +91,12 @@ if settings.environment in ("production", "staging") and settings.cors_origins !
         allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
     )
 else:
+    if settings.cors_origins == "*":
+        logger.warning(
+            "CORS configured with allow_origins=['*'] and allow_credentials=True. "
+            "Browsers will block credentialed cross-origin requests with wildcard origins. "
+            "Set API_CORS_ORIGINS to specific origins before enabling auth."
+        )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins_list,
