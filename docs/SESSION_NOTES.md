@@ -597,3 +597,70 @@ Continuation of the 2026-02-17 session (previous context ran out). Focused on do
 
 - Manual UI testing of the full application stack using ui-testing-guide.md
 - Defect fixes based on testing results
+
+---
+
+## Session 2026-02-21
+
+**Date**: 2026-02-21
+**Duration**: Full session
+**Status**: Prometheus metrics fully integrated. Documentation updated.
+**Overall Progress**: M0-M7 all at 100%. 469 tests passing.
+
+### Session Overview
+
+Focused on making Prometheus and Grafana actually receive real data. Identified that 5 of 6 Prometheus scrape targets were broken (Fluent Bit port not exposed, API/Alerting missing /metrics, OpenSearch scrape failing). Implemented full metrics pipeline, added opensearch-exporter sidecar, updated Grafana dashboard with service metrics panels. Then fixed pre-existing RT-012 test failures and performed comprehensive documentation update across all files.
+
+### Key Accomplishments
+
+1. **Prometheus Metrics for API & Alerting** — Added `prometheus-fastapi-instrumentator` to both services, auto-exposing `/metrics` endpoints with request counts, latency histograms, and in-progress gauges
+2. **Fluent Bit Metrics Port** — Exposed port 2020 in docker-compose.yml (HTTP_Server was already enabled in config)
+3. **OpenSearch Exporter** — Added `opensearch-exporter` sidecar (prometheuscommunity/elasticsearch-exporter:v1.7.0) to Docker Compose under metrics profile
+4. **Prometheus Config** — Updated scrape targets: active jobs for fluent-bit, analytics-api, alerting-service, opensearch (via exporter)
+5. **Rate Limiter Update** — Added `/metrics` to skip list so Prometheus scraping isn't rate-limited
+6. **Grafana Dashboard** — Added "Service Metrics" row (4 panels: API/Alerting request rate + P95 latency) and replaced node UP/DOWN panels with exporter-based cluster metrics
+7. **RT-012 Fix** — Corrected all path references from `/var/log/app-logs` to `/app/logs`
+8. **RT-019 Regression Test** — 23 tests validating entire Prometheus metrics integration
+9. **Unit Tests** — 12 new API metrics tests, 4 new Alerting metrics tests
+10. **Documentation Update** — Updated test counts, service counts, added opensearch-exporter references across all docs
+11. **Integration Guide** — Created `docs/integration/log-integration-guide.md` for teams connecting log-generating systems
+
+### Test Summary
+
+| Suite | Count | Status |
+|-------|-------|--------|
+| Regression (RT-001 to RT-019) | 261 | All passed |
+| API unit tests | 103 | All passed |
+| Alerting unit tests | 105 | All passed |
+| **Total** | **469** | **All passed** |
+
+### Files Modified
+
+- `docker-compose.yml` — Fluent Bit port 2020, opensearch-exporter sidecar
+- `analytics/api/requirements.txt` — prometheus-fastapi-instrumentator
+- `analytics/api/app/main.py` — Instrumentator integration
+- `analytics/api/app/middleware/rate_limit.py` — /metrics skip
+- `analytics/alerting/requirements.txt` — prometheus-fastapi-instrumentator
+- `analytics/alerting/app/main.py` — Instrumentator integration
+- `ingestion/configs/prometheus/prometheus.yml` — exporter target
+- `dashboards/grafana/dashboards/platform-health.json` — 7 new/updated panels
+- `tests/regression/test_regression_012_file_ingestion_config.py` — path fix
+- All documentation files (README.md, TODO.md, CHANGELOG.md, MILESTONES.md, etc.)
+
+### Files Created
+
+- `analytics/api/tests/test_metrics.py` — API /metrics unit tests
+- `analytics/alerting/tests/test_metrics.py` — Alerting /metrics unit tests
+- `tests/regression/test_regression_019_prometheus_metrics.py` — 23 regression tests
+- `docs/integration/log-integration-guide.md` — Integration guide for teams
+
+### Architecture Decisions
+
+- **opensearch-exporter over direct scraping**: OpenSearch doesn't natively export Prometheus metrics; the community elasticsearch-exporter works with OpenSearch due to API compatibility
+- **prometheus-fastapi-instrumentator over manual metrics**: Zero-config, auto-instruments all routes with standard metrics
+- **OpenSearch Dashboards excluded**: Does not expose Prometheus-compatible metrics (returns JSON, not Prometheus format)
+
+### Next Session
+
+- Manual UI testing of the full application stack
+- Verify Prometheus targets are UP in Prometheus UI after `docker compose --profile metrics --profile services up -d`

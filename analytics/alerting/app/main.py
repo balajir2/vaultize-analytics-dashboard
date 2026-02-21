@@ -100,6 +100,11 @@ async def global_exception_handler(request, exc):
 app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["Alerts"])
 
+# Prometheus metrics
+from prometheus_fastapi_instrumentator import Instrumentator
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
 
 @app.get("/")
 async def root():

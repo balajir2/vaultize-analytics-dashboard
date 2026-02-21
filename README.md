@@ -72,11 +72,13 @@ Applications / Servers
    OpenSearch Cluster (Search & Analytics)
         |
         ├──> OpenSearch Dashboards (Visualization)
-        ├──> Analytics API (RESTful API)
-        ├──> Alerting Service (Threshold Alerts)
+        ├──> Analytics API (RESTful API + /metrics)
+        ├──> Alerting Service (Threshold Alerts + /metrics)
         └──> Grafana (Optional: Metrics + Logs)
              ↑
         Prometheus (Optional: Metrics)
+             ↑
+        OpenSearch Exporter (Cluster Metrics)
 ```
 
 For detailed architecture, see [Technology Stack](docs/architecture/tech-stack.md) and [System Architecture Diagrams](docs/architecture/diagrams/system-architecture.md).
@@ -149,19 +151,19 @@ M7: Production Hardening    [####################] 100%  Complete
 | **M1: Infrastructure** | Docker Compose stack, 3-node OpenSearch cluster, all configs |
 | **M2: Ingestion** | Fluent Bit with 4 parsers, multi-source support, sample logs |
 | **M3: Analytics API** | 17 REST endpoints, 89% test coverage, JWT auth |
-| **M4: Dashboards** | 2 OpenSearch dashboards + 1 Grafana dashboard, import scripts |
+| **M4: Dashboards** | 2 OpenSearch dashboards + 1 Grafana dashboard (with service metrics), import scripts |
 | **M5: Alerting** | Threshold-based alerts, webhook notifications, state management |
-| **M6: Testing & Docs** | 437 tests passing, 34 docs with zero dead links |
-| **M7: Production** | TLS, RBAC, backup/restore, security hardening, ops scripts |
+| **M6: Testing & Docs** | 469 tests passing, 35+ docs with zero dead links |
+| **M7: Production** | TLS, RBAC, backup/restore, security hardening, ops scripts, Prometheus metrics |
 
 ### Test Results
 
 | Suite | Tests | Coverage |
 |-------|-------|----------|
-| Analytics API | 98 passing | 89% |
-| Alerting Service | 101 passing | 81% |
-| Regression (RT-001 to RT-018) | 238 passing | — |
-| **Total** | **437 passing** | **>80%** |
+| Analytics API | 103 passing | 89% |
+| Alerting Service | 105 passing | 81% |
+| Regression (RT-001 to RT-019) | 261 passing | — |
+| **Total** | **469 passing** | **>80%** |
 
 ---
 
@@ -294,8 +296,9 @@ See [AUTHORS.md](AUTHORS.md) for complete contributor list.
 - ✅ OpenSearch cluster with index templates and ILM
 - ✅ Fluent Bit log ingestion (4 parser types)
 - ✅ Analytics API (17 endpoints, 89% test coverage, JWT auth)
-- ✅ Pre-built dashboards (2 OpenSearch + 1 Grafana)
+- ✅ Pre-built dashboards (2 OpenSearch + 1 Grafana with service metrics)
 - ✅ Alerting system (threshold rules, webhooks, state management)
+- ✅ Prometheus metrics integration (API, Alerting, Fluent Bit, OpenSearch via exporter)
 - ✅ Production hardening (TLS, RBAC, backup/restore, ops scripts)
 
 **Post-v1.0** (Future):

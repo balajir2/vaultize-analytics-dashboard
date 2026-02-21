@@ -50,29 +50,27 @@ scrape_configs:
           service: 'prometheus'
 
   # --------------------------------------------------------------------------
-  # OpenSearch Cluster
+  # OpenSearch Cluster (via opensearch-exporter sidecar)
   # --------------------------------------------------------------------------
   - job_name: 'opensearch'
     static_configs:
-      - targets:
-          - 'opensearch-node-1:9200'
-          - 'opensearch-node-2:9200'
-          - 'opensearch-node-3:9200'
+      - targets: ['opensearch-exporter:9114']
         labels:
           cluster: 'vaultize-cluster'
           service: 'opensearch'
-    metrics_path: '/_prometheus/metrics'
-    # Note: Requires Prometheus exporter plugin for OpenSearch
+    metrics_path: '/metrics'
 
   # --------------------------------------------------------------------------
-  # OpenSearch Dashboards
+  # OpenSearch Dashboards (disabled: /api/stats returns JSON, not Prometheus format)
   # --------------------------------------------------------------------------
-  - job_name: 'opensearch-dashboards'
-    static_configs:
-      - targets: ['opensearch-dashboards:5601']
-        labels:
-          service: 'opensearch-dashboards'
-    metrics_path: '/api/stats'
+  # OpenSearch Dashboards does not natively export Prometheus metrics.
+  #
+  # - job_name: 'opensearch-dashboards'
+  #   static_configs:
+  #     - targets: ['opensearch-dashboards:5601']
+  #       labels:
+  #         service: 'opensearch-dashboards'
+  #   metrics_path: '/api/stats'
 
   # --------------------------------------------------------------------------
   # Fluent Bit

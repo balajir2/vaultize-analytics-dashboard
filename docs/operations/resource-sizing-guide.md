@@ -17,6 +17,7 @@ Recommended resource allocations for different deployment sizes of the Vaultize 
 | Alerting Service | 0.5 core | 256 MB | - | 1 |
 | Prometheus (optional) | 0.5 core | 512 MB | 10 GB | 1 |
 | Grafana (optional) | 0.5 core | 256 MB | 1 GB | 1 |
+| OpenSearch Exporter (optional) | 0.25 core | 128 MB | - | 1 |
 | **Total** | **6-7 cores** | **7-8 GB** | **60+ GB** | |
 
 **Host Requirements**: 8-core CPU, 16 GB RAM, 100 GB SSD
@@ -34,6 +35,7 @@ Recommended resource allocations for different deployment sizes of the Vaultize 
 | Alerting Service | 1 core | 512 MB | - | 1 |
 | Prometheus | 1 core | 2 GB | 50 GB | 1 |
 | Grafana | 1 core | 512 MB | 5 GB | 1 |
+| OpenSearch Exporter | 0.5 core | 256 MB | - | 1 |
 | **Total** | **20+ cores** | **30+ GB** | **650+ GB** | |
 
 **Host Requirements**: Dedicated server or VMs — 32-core CPU, 64 GB RAM, 1 TB SSD
@@ -52,6 +54,7 @@ Recommended resource allocations for different deployment sizes of the Vaultize 
 | Alerting Service | 2 cores | 1 GB | - | 2 (HA) |
 | Prometheus | 4 cores | 8 GB | 200 GB | 1 |
 | Grafana | 2 cores | 1 GB | 10 GB | 2 (behind LB) |
+| OpenSearch Exporter | 0.5 core | 256 MB | - | 1 |
 | **Total** | **60+ cores** | **120+ GB** | **5+ TB** | |
 
 **Host Requirements**: Multiple servers or VMs, load balancer, dedicated storage

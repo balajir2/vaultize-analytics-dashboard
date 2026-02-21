@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-02-21 (Prometheus Metrics Integration)
+
+### Added
+- **Prometheus Metrics for Analytics API**: `prometheus-fastapi-instrumentator` dependency; auto-exposed `/metrics` endpoint with request count, latency histograms, in-progress gauges
+- **Prometheus Metrics for Alerting Service**: Same instrumentator integration with `/metrics` endpoint
+- **OpenSearch Exporter Sidecar**: `opensearch-exporter` service (prometheuscommunity/elasticsearch-exporter:v1.7.0) translates OpenSearch cluster stats into Prometheus metrics
+- **Fluent Bit Metrics Port**: Exposed port 2020 in docker-compose.yml for Prometheus scraping
+- **Grafana Service Metrics Panels**: 4 new panels in "Service Metrics" row (API/Alerting request rate + P95 latency)
+- **Grafana OpenSearch Panels**: Cluster Status, Node Count, Active Shards via exporter metrics
+- **Rate Limiter /metrics Exclusion**: `/metrics` endpoint excluded from per-IP rate limiting
+- **RT-019 Regression Test** (23 tests): Prometheus metrics integration validation
+- **API Metrics Unit Tests** (12 new): /metrics endpoint behavior tests
+- **Alerting Metrics Unit Tests** (4 new): /metrics endpoint behavior tests
+- **Integration Guide**: `docs/integration/log-integration-guide.md` — connecting log-generating systems to the platform
+
+### Fixed
+- RT-012 regression tests: corrected path references from `/var/log/app-logs` to `/app/logs`
+
+### Changed
+- Prometheus scrape config: OpenSearch target now uses opensearch-exporter sidecar
+- Grafana dashboard: replaced node UP/DOWN panels with exporter-based cluster metrics
+- Test counts: 469 total (103 API + 105 Alerting + 261 Regression), up from 437
+- Docker Compose: 10 services total (added opensearch-exporter under metrics profile)
+- Documentation updates across all files to reflect new services and test counts
+
+---
+
 ## [1.0.0] - 2026-02-17 (Documentation Rationalization + Bug Fixes)
 
 ### Fixed

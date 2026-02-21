@@ -41,8 +41,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not settings.rate_limit_enabled:
             return await call_next(request)
 
-        # Skip rate limiting for health endpoints
-        if request.url.path.startswith("/health"):
+        # Skip rate limiting for health and metrics endpoints
+        if request.url.path.startswith("/health") or request.url.path == "/metrics":
             return await call_next(request)
 
         client_ip = request.client.host if request.client else "unknown"

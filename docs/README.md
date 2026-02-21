@@ -3,7 +3,7 @@
 > **On-Premise Log Analytics and Observability Platform**
 > Built with OpenSearch, FastAPI, Fluent Bit, Grafana, and Prometheus
 
-**Last Updated**: 2026-02-17 | **Platform Version**: 1.0.0 | **Status**: Complete
+**Last Updated**: 2026-02-21 | **Platform Version**: 1.0.0 | **Status**: Complete
 
 ---
 
@@ -37,6 +37,7 @@ Applications / Servers
 - **Alerting Service** - Threshold-based alerts with webhook notifications
 - **OpenSearch Dashboards** - Log exploration and visualization
 - **Grafana** - Unified dashboards across OpenSearch + Prometheus
+- **OpenSearch Exporter** - Translates OpenSearch cluster metrics to Prometheus format
 - **Prometheus** - System health metrics (optional, complementary)
 
 For detailed technology choices and rationale, see [Technology Stack](./architecture/tech-stack.md).
@@ -73,7 +74,8 @@ For system architecture diagrams (Mermaid), see [System Architecture Diagrams](.
 ### Integration
 | Document | Description |
 |----------|-------------|
-| [DRM Integration Guide](./integration/DRM_INTEGRATION_GUIDE.md) | Complete guide for integrating DRM/file-security event logs |
+| [Log Integration Guide](./integration/log-integration-guide.md) | **How to connect your application's logs to the platform** (file, forward, API methods) |
+| [DRM Integration Guide](./integration/DRM_INTEGRATION_GUIDE.md) | Specialized guide for integrating DRM/file-security event logs |
 
 ### User Guides
 | Document | Description |
@@ -110,7 +112,7 @@ The Analytics API provides interactive documentation via Swagger UI:
 | Document | Description |
 |----------|-------------|
 | [Test Suite Overview](../tests/README.md) | Test structure and running instructions |
-| [Regression Tests](../tests/regression/REGRESSION_TESTS.md) | Regression test catalog (RT-001 through RT-011) |
+| [Regression Tests](../tests/regression/REGRESSION_TESTS.md) | Regression test catalog (RT-001 through RT-019) |
 | [API Test Coverage](../analytics/api/tests/COVERAGE_REPORT.md) | API unit test coverage report (89%) |
 
 ---
@@ -126,6 +128,7 @@ The Analytics API provides interactive documentation via Swagger UI:
 | Analytics API | `http://localhost:8000` | JWT token via `/auth/token` |
 | Grafana | `http://localhost:3000` | admin / admin |
 | Prometheus | `http://localhost:9090` | None |
+| OpenSearch Exporter | `http://localhost:9114` | None |
 
 ### Common Commands
 
@@ -133,8 +136,8 @@ The Analytics API provides interactive documentation via Swagger UI:
 # Start all services
 docker compose up -d
 
-# Start with optional services (Grafana, Prometheus)
-docker compose --profile monitoring --profile grafana up -d
+# Start with metrics (Grafana, Prometheus, OpenSearch Exporter)
+docker compose --profile metrics up -d
 
 # Check service health
 curl http://localhost:8000/health

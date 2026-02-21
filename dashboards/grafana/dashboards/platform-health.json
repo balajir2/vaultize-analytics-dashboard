@@ -51,12 +51,12 @@
         "textMode": "value_and_name",
         "reduceOptions": { "calcs": ["lastNotNull"] }
       },
-      "title": "OpenSearch Node 1",
+      "title": "OpenSearch Cluster",
       "type": "stat",
       "targets": [
         {
-          "expr": "up{job=\"opensearch\", instance=~\"opensearch-node-1.*\"}",
-          "legendFormat": "Node 1"
+          "expr": "up{job=\"opensearch\"}",
+          "legendFormat": "Cluster"
         }
       ]
     },
@@ -68,12 +68,10 @@
             "mode": "absolute",
             "steps": [
               { "color": "red", "value": null },
-              { "color": "green", "value": 1 }
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 3 }
             ]
-          },
-          "mappings": [
-            { "options": { "0": { "text": "DOWN" }, "1": { "text": "UP" } }, "type": "value" }
-          ]
+          }
         }
       },
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
@@ -85,12 +83,12 @@
         "textMode": "value_and_name",
         "reduceOptions": { "calcs": ["lastNotNull"] }
       },
-      "title": "OpenSearch Node 2",
+      "title": "Cluster Nodes",
       "type": "stat",
       "targets": [
         {
-          "expr": "up{job=\"opensearch\", instance=~\"opensearch-node-2.*\"}",
-          "legendFormat": "Node 2"
+          "expr": "elasticsearch_cluster_health_number_of_nodes{job=\"opensearch\"}",
+          "legendFormat": "Nodes"
         }
       ]
     },
@@ -104,10 +102,7 @@
               { "color": "red", "value": null },
               { "color": "green", "value": 1 }
             ]
-          },
-          "mappings": [
-            { "options": { "0": { "text": "DOWN" }, "1": { "text": "UP" } }, "type": "value" }
-          ]
+          }
         }
       },
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
@@ -119,12 +114,12 @@
         "textMode": "value_and_name",
         "reduceOptions": { "calcs": ["lastNotNull"] }
       },
-      "title": "OpenSearch Node 3",
+      "title": "Active Shards",
       "type": "stat",
       "targets": [
         {
-          "expr": "up{job=\"opensearch\", instance=~\"opensearch-node-3.*\"}",
-          "legendFormat": "Node 3"
+          "expr": "elasticsearch_cluster_health_active_shards{job=\"opensearch\"}",
+          "legendFormat": "Shards"
         }
       ]
     },
@@ -274,6 +269,153 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "id": 15,
+      "title": "Service Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+      "id": 16,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Analytics API - Request Rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{job=\"analytics-api\"}[5m])) by (handler, method)",
+          "legendFormat": "{{method}} {{handler}}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
+      "id": 17,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Alerting Service - Request Rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{job=\"alerting-service\"}[5m])) by (handler, method)",
+          "legendFormat": "{{method}} {{handler}}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 19 },
+      "id": 18,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Analytics API - P95 Latency",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"analytics-api\"}[5m])) by (le, handler))",
+          "legendFormat": "{{handler}}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "mode": "none" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
+      "id": 19,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Alerting Service - P95 Latency",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"alerting-service\"}[5m])) by (le, handler))",
+          "legendFormat": "{{handler}}"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
       "id": 10,
       "title": "Log Ingestion",
       "type": "row"
@@ -294,7 +436,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
       "id": 11,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -325,7 +467,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
       "id": 12,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -342,14 +484,14 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 19 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
       "id": 13,
       "title": "Log Search (OpenSearch)",
       "type": "row"
     },
     {
       "datasource": { "type": "grafana-opensearch-datasource", "uid": "opensearch" },
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 37 },
       "id": 14,
       "options": {
         "showTime": true,

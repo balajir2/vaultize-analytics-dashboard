@@ -2,7 +2,7 @@
 
 > Complete registry of all regression tests to prevent bug reoccurrence
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-21
 
 ---
 
@@ -506,16 +506,37 @@ Validates E2E test files, conftest fixtures, pytest markers, and service fixture
 
 ---
 
+### RT-019: Prometheus Metrics Integration
+
+**File**: `test_regression_019_prometheus_metrics.py`
+**Date**: 2026-02-21
+**Severity**: Medium
+**Tests**: 23
+
+**Original Feature**:
+Prometheus metrics integration across the platform: Fluent Bit port exposure, FastAPI instrumentator for Analytics API and Alerting Service, Prometheus scrape targets, rate limiter exclusion for /metrics, OpenSearch exporter sidecar, and Grafana dashboard service metrics panels.
+
+**Test Coverage**:
+- Fluent Bit metrics port 2020 exposed and configurable (3 tests)
+- Analytics API has prometheus-fastapi-instrumentator dependency and integration (3 tests)
+- Alerting Service has prometheus-fastapi-instrumentator dependency and integration (2 tests)
+- Prometheus scrape targets for fluent-bit, analytics-api, alerting-service, opensearch (4 tests)
+- Rate limiter excludes /metrics endpoint (1 test)
+- Grafana dashboard has service metrics panels: request rate, latency, OpenSearch health (7 tests)
+- OpenSearch exporter sidecar configured in Docker Compose (3 tests)
+
+---
+
 ## Statistics
 
 | Category | Count |
 |----------|-------|
-| **Total Regression Tests** | 238 |
-| **Regression Test Files** | 17 (RT-001 through RT-018, minus RT-004 moved) |
+| **Total Regression Tests** | 261 |
+| **Regression Test Files** | 18 (RT-001 through RT-019, minus RT-004 moved) |
 | **Integration Tests (moved)** | 1 (RT-004) |
 | **Critical Severity** | 7 |
 | **High Severity** | 7 |
-| **Medium Severity** | 3 |
+| **Medium Severity** | 4 |
 | **Low Severity** | 0 |
 
 ---
@@ -638,4 +659,4 @@ class TestRegressionXXX:
 
 ---
 
-**Last Updated**: 2026-02-17 (Updated: Added RT-012 through RT-018 for production hardening and testing)
+**Last Updated**: 2026-02-21 (Updated: Added RT-019 for Prometheus metrics integration)

@@ -1,6 +1,6 @@
 # Test Coverage Report - Analytics API
 
-**Generated**: 2026-02-17
+**Generated**: 2026-02-21
 **Authors**: Balaji Rajan and Claude (Anthropic)
 **License**: Apache 2.0
 **Overall Coverage**: 89%
@@ -10,7 +10,7 @@
 
 The Analytics API has comprehensive test coverage across all major components:
 
-- **Total Tests**: 98 (all passing)
+- **Total Tests**: 103 (all passing)
 - **Total Statements**: 546
 - **Covered Statements**: 484
 - **Coverage**: **89%**
@@ -33,7 +33,7 @@ The Analytics API has comprehensive test coverage across all major components:
 
 ## Test Breakdown
 
-### Unit Tests (98 passing)
+### Unit Tests (103 passing)
 
 1. **Model Tests** (`test_models.py`) - 27 tests
    - APIResponse, PaginationParams, PaginationMeta
@@ -67,6 +67,13 @@ The Analytics API has comprehensive test coverage across all major components:
    - Token generation and validation
    - Authentication and authorization
    - Error handling
+
+7. **Metrics Endpoint Tests** (`test_metrics.py`) - 5 tests
+   - /metrics returns 200 OK
+   - Prometheus text format
+   - Contains http_request metrics
+   - Excluded from OpenAPI schema
+   - Not rate-limited
 
 ### Integration Tests
 
@@ -118,4 +125,4 @@ pytest tests/integration/ -v
 - Tests isolated and deterministic
 - Clear arrange-act-assert structure
 - Proper use of mocks and fixtures
-- All 98 tests passing with 0 failures
+- All 103 tests passing with 0 failures

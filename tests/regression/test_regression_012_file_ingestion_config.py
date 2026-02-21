@@ -61,26 +61,26 @@ class TestFluentBitTailInput:
         """RT-012-01: Config must have a tail input for .log files."""
         assert "Name              tail" in fluent_bit_config, \
             "Fluent Bit config missing tail input plugin"
-        assert "/var/log/app-logs/*.log" in fluent_bit_config, \
-            "Tail input missing path for .log files (/var/log/app-logs/*.log)"
+        assert "/app/logs/*.log" in fluent_bit_config, \
+            "Tail input missing path for .log files (/app/logs/*.log)"
 
     def test_has_tail_input_for_txt_files(self, fluent_bit_config):
         """RT-012-02: Config must have a tail input for .txt files."""
-        assert "/var/log/app-logs/*.txt" in fluent_bit_config, \
-            "Tail input missing path for .txt files (/var/log/app-logs/*.txt)"
+        assert "/app/logs/*.txt" in fluent_bit_config, \
+            "Tail input missing path for .txt files (/app/logs/*.txt)"
 
     def test_tail_uses_app_json_parser(self, fluent_bit_config):
         """RT-012-03: JSON tail input must use app_json parser."""
         # Find the section for .log files and check its parser
-        log_section = fluent_bit_config.split("/var/log/app-logs/*.log")[0].rsplit("[INPUT]", 1)[-1]
-        full_section = log_section + fluent_bit_config.split("/var/log/app-logs/*.log")[1].split("[")[0]
+        log_section = fluent_bit_config.split("/app/logs/*.log")[0].rsplit("[INPUT]", 1)[-1]
+        full_section = log_section + fluent_bit_config.split("/app/logs/*.log")[1].split("[")[0]
         assert "app_json" in full_section, \
             "Tail input for .log files must use app_json parser"
 
     def test_tail_uses_app_structured_parser(self, fluent_bit_config):
         """RT-012-04: Text tail input must use app_structured parser."""
-        txt_section = fluent_bit_config.split("/var/log/app-logs/*.txt")[0].rsplit("[INPUT]", 1)[-1]
-        full_section = txt_section + fluent_bit_config.split("/var/log/app-logs/*.txt")[1].split("[")[0]
+        txt_section = fluent_bit_config.split("/app/logs/*.txt")[0].rsplit("[INPUT]", 1)[-1]
+        full_section = txt_section + fluent_bit_config.split("/app/logs/*.txt")[1].split("[")[0]
         assert "app_structured" in full_section, \
             "Tail input for .txt files must use app_structured parser"
 
@@ -100,7 +100,7 @@ class TestFluentBitTailInput:
         """RT-012-07: Tail inputs must have memory buffer limits."""
         # Count Mem_Buf_Limit occurrences in tail sections
         tail_sections = fluent_bit_config.split("[INPUT]")
-        file_sections = [s for s in tail_sections if "/var/log/app-logs/" in s]
+        file_sections = [s for s in tail_sections if "/app/logs/" in s]
         for section in file_sections:
             assert "Mem_Buf_Limit" in section, \
                 "File tail input missing Mem_Buf_Limit configuration"
@@ -147,18 +147,18 @@ class TestDockerComposeMount:
     """Validate docker-compose.yml mounts the sample-logs directory."""
 
     def test_fluent_bit_has_app_logs_volume(self, docker_compose_config):
-        """RT-012-12: Fluent Bit service must mount sample-logs to /var/log/app-logs."""
-        assert "/var/log/app-logs" in docker_compose_config, \
-            "docker-compose.yml missing volume mount for /var/log/app-logs"
+        """RT-012-12: Fluent Bit service must mount sample-logs to /app/logs."""
+        assert "/app/logs" in docker_compose_config, \
+            "docker-compose.yml missing volume mount for /app/logs"
 
     def test_volume_mount_is_readonly(self, docker_compose_config):
         """RT-012-13: Sample logs volume should be mounted read-only."""
-        assert "sample-logs:/var/log/app-logs:ro" in docker_compose_config, \
+        assert "sample-logs:/app/logs:ro" in docker_compose_config, \
             "Sample logs volume mount should be read-only (:ro)"
 
     def test_mount_references_correct_host_path(self, docker_compose_config):
         """RT-012-14: Volume mount should reference ingestion/sample-logs."""
-        assert "./ingestion/sample-logs:/var/log/app-logs" in docker_compose_config, \
+        assert "./ingestion/sample-logs:/app/logs" in docker_compose_config, \
             "Volume mount should reference ./ingestion/sample-logs"
 
 

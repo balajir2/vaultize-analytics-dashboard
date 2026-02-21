@@ -147,6 +147,14 @@ app.include_router(aggregations.router, prefix=settings.api_root_path, tags=["Ag
 app.include_router(indices.router, prefix=f"{settings.api_root_path}/indices", tags=["Index Management"])
 
 # ============================================================================
+# Prometheus Metrics
+# ============================================================================
+
+from prometheus_fastapi_instrumentator import Instrumentator
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
+# ============================================================================
 # Root Endpoint
 # ============================================================================
 

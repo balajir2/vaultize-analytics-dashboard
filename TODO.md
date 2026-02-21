@@ -1,7 +1,7 @@
 # Project TODO
 
-> **Last Updated**: 2026-02-17 (End of Session 2)
-> **Status**: All milestones complete. Platform at 100%. Documentation fully rationalized.
+> **Last Updated**: 2026-02-21
+> **Status**: All milestones complete. Platform at 100%. Prometheus metrics fully integrated.
 
 ---
 
@@ -28,8 +28,24 @@
 - [x] Created UI-only manual testing guide (docs/operations/ui-testing-guide.md)
 - [x] Committed and pushed all changes (5 commits)
 
+### Completed Today (2026-02-21)
+- [x] Prometheus metrics integration for Analytics API (prometheus-fastapi-instrumentator)
+- [x] Prometheus metrics integration for Alerting Service (prometheus-fastapi-instrumentator)
+- [x] Fluent Bit metrics port 2020 exposed in docker-compose.yml
+- [x] OpenSearch Exporter sidecar (opensearch-exporter) added to Docker Compose
+- [x] Prometheus scrape targets updated for all services
+- [x] Rate limiter /metrics endpoint exclusion
+- [x] Grafana dashboard: Service Metrics row (API/Alerting request rate + P95 latency)
+- [x] Grafana dashboard: OpenSearch cluster panels via exporter
+- [x] Fixed RT-012 pre-existing failures (/var/log/app-logs → /app/logs)
+- [x] RT-019 regression test (23 tests for Prometheus metrics)
+- [x] API unit tests for /metrics endpoint (12 new tests)
+- [x] Alerting unit tests for /metrics endpoint (4 new tests)
+- [x] Updated all documentation to reflect metrics integration
+- [x] Created integration guide for log-generating systems
+
 ### Pending
-- [ ] Manual UI testing of full application stack (scheduled for next session)
+- [ ] Manual UI testing of full application stack
 
 ---
 
@@ -63,9 +79,9 @@
 - [x] Grafana dashboard provisioning (platform-health.json)
 
 ### Testing - All Complete
-- [x] Regression suite: 238 tests (RT-001 through RT-018)
-- [x] API unit tests: 91 passed
-- [x] Alerting unit tests: 101 passed
+- [x] Regression suite: 261 tests (RT-001 through RT-019)
+- [x] API unit tests: 103 passed
+- [x] Alerting unit tests: 105 passed
 - [x] E2E, integration, and performance test frameworks
 
 ### Documentation - All Complete
@@ -77,4 +93,5 @@
 ## Notes
 
 **Session 2026-02-17 (Session 1)**: Completed all 10 phases of final development plan. ~40 new files created. Platform at 100%.
-**Session 2026-02-17 (Session 2)**: Fixed 7 API test failures, rationalized all documentation, created UI testing guide. Next session: manual UI testing and defect fixes.
+**Session 2026-02-17 (Session 2)**: Fixed 7 API test failures, rationalized all documentation, created UI testing guide.
+**Session 2026-02-21**: Prometheus metrics integration — instrumentator for API/Alerting, opensearch-exporter sidecar, Grafana service metrics panels, RT-019 (23 tests), documentation updates, integration guide.

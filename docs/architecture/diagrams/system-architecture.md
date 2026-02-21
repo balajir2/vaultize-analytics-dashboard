@@ -29,10 +29,18 @@ graph LR
         ALT --> |state/history| OS
     end
 
+    subgraph Monitoring
+        PM[Prometheus] --> |scrape /metrics| API
+        PM --> |scrape /metrics| ALT
+        PM --> |scrape /api/v1/metrics/prometheus| FB
+        PM --> |scrape /metrics| EXP[OpenSearch Exporter]
+        EXP --> |cluster stats| OS
+    end
+
     subgraph Visualization
         OSD[OpenSearch Dashboards] --> |queries| OS
         GF[Grafana] --> |queries| OS
-        GF --> |metrics| PM[Prometheus]
+        GF --> |metrics| PM
     end
 
     subgraph Users
@@ -59,6 +67,7 @@ graph TB
         ALT[Alerting Service<br/>:8001]
         PM[Prometheus<br/>:9090]
         GF[Grafana<br/>:3000]
+        EXP[OpenSearch Exporter<br/>:9114]
     end
 
     EXT[External Access] --> |:5601| OSD
@@ -159,8 +168,9 @@ bash scripts/ops/start_secure.sh
 |-----------|-----------|------|---------|
 | OpenSearch (x3) | OpenSearch 2.11.1 | 9200-9202 | Search & analytics engine |
 | OpenSearch Dashboards | OSD 2.11.1 | 5601 | Visualization UI |
-| Fluent Bit | Fluent Bit 2.2.0 | 24224, 2020 | Log ingestion |
-| Analytics API | FastAPI (Python) | 8000 | REST API for search/agg |
-| Alerting Service | FastAPI (Python) | 8001 | Alert evaluation & notification |
+| Fluent Bit | Fluent Bit 2.2.0 | 24224, 2020 | Log ingestion + metrics |
+| Analytics API | FastAPI (Python) | 8000 | REST API for search/agg + /metrics |
+| Alerting Service | FastAPI (Python) | 8001 | Alert evaluation & notification + /metrics |
 | Prometheus | Prometheus v2.48.1 | 9090 | Metrics collection (optional) |
 | Grafana | Grafana 10.2.3 | 3000 | Unified dashboards (optional) |
+| OpenSearch Exporter | elasticsearch-exporter v1.7.0 | 9114 | OpenSearch cluster metrics (optional) |

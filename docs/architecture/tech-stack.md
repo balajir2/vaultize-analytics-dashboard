@@ -2,7 +2,7 @@
 
 > Comprehensive overview of all technologies used in the Vaultize Analytics Platform
 
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-21
 
 ---
 
@@ -87,11 +87,13 @@ This document provides a complete reference of all technologies, tools, and fram
 |------------|---------|-----------------|------------------------|
 | **Prometheus 2.x** | - Metrics scraping<br>- Time-series metrics storage<br>- Alerting on metrics<br>- Service discovery | - Industry standard for metrics<br>- Pull-based model<br>- Powerful query language (PromQL)<br>- Integrates with Grafana | - InfluxDB (different use case)<br>- Graphite (older tech)<br>- OpenSearch for metrics (not optimal) |
 | **Node Exporter** | - Host-level metrics<br>- CPU, memory, disk, network | - Standard Prometheus exporter<br>- Comprehensive system metrics | - cAdvisor (container-only) |
+| **OpenSearch Exporter** | - OpenSearch cluster metrics<br>- Cluster health, node count, shard stats | - Community-maintained (elasticsearch-exporter)<br>- Works with OpenSearch (API compatible)<br>- Translates to Prometheus format | - Direct OpenSearch plugin (not available) |
+| **prometheus-fastapi-instrumentator** | - Auto-instrument FastAPI apps<br>- /metrics endpoint for API and Alerting | - Zero config, auto-instruments all routes<br>- Standard metrics (request count, latency, in-progress) | - Manual Prometheus client (more boilerplate) |
 | **Prometheus Exporters** | - Application metrics<br>- OpenSearch metrics<br>- Custom metrics | - Standardized exposition format<br>- Wide ecosystem | - Custom metrics endpoints |
 
 **Key Features Used**:
 - Service discovery
-- Multi-target scraping
+- Multi-target scraping (Fluent Bit, API, Alerting, OpenSearch exporter)
 - PromQL queries
 - Alertmanager integration (future)
 - Long-term storage (future)
@@ -359,4 +361,4 @@ mypy==1.7.0
 
 ---
 
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-21

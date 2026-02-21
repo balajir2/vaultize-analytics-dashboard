@@ -1,9 +1,11 @@
 # Vaultize Analytics - Manual Testing Guide
 
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-21
 **Authors**: Balaji Rajan and Claude (Anthropic)
 **License**: Apache 2.0
 **System Status**: Fully Operational
+
+> **Prefer browser-only testing?** See [UI Testing Guide](./ui-testing-guide.md) — zero CLI commands.
 
 ---
 
@@ -492,12 +494,14 @@ for i in $(seq 1 100); do curl -s -o /dev/null -w "%{http_code}\n" http://localh
 2. Navigate to Dashboards
 3. Open **"Vaultize Platform Health"** dashboard
 
-**What You Should See (14 panels)**:
+**What You Should See (21+ panels)**:
 - Total Services, Active Alerts, Error Rate, Uptime stats
-- Service Health Status, Fluent Bit metrics
+- OpenSearch Cluster Status, Node Count, Active Shards (via exporter)
+- Service Metrics: API/Alerting request rates and P95 latency
+- Fluent Bit metrics
 - OpenSearch log viewer with log levels
 
-**Note**: Datasources (OpenSearch + Prometheus) are auto-provisioned.
+**Note**: Datasources (OpenSearch + Prometheus) are auto-provisioned. Service metrics require `--profile metrics --profile services`.
 
 ---
 
@@ -622,5 +626,6 @@ This section tracks updates to the testing guide after each development session.
 | 2026-02-10 | M5 Alerting Service implemented. Added `docs/operations/full-platform-test-guide.md` for comprehensive end-to-end manual testing of the entire platform (33 test steps across 6 test areas). Alerting service endpoints: health (8001/health/), rules listing, manual trigger, history, reload. |
 | 2026-02-17 | M7 Production Hardening + M6 Testing completion. Added: Test 6 (Alerting Service), Test 7 (Security Mode with TLS/JWT/rate limiting), Test 8 (Grafana dashboards with auto-provisioned datasources). Updated checklist with alerting and Grafana items. New test files: RT-012 through RT-018 (174 regression tests). E2E, integration, and performance test frameworks created. Total regression tests: 238. |
 | 2026-02-17 (Session 2) | Created separate UI-only testing guide (`docs/operations/ui-testing-guide.md`) — 100% browser-based, zero CLI commands. Covers OpenSearch Dashboards, Analytics API Swagger UI, Alerting Service Swagger UI, Grafana, Prometheus. Fixed 7 pre-existing API test failures. Comprehensive doc audit: fixed 11 dead links across 8 files. |
+| 2026-02-21 | Prometheus metrics integration: API/Alerting /metrics endpoints via prometheus-fastapi-instrumentator, Fluent Bit port 2020 exposed, opensearch-exporter sidecar, Grafana Service Metrics panels. Updated Grafana test to reflect 21+ panels. RT-019 (23 tests). Total regression: 261, API: 103, Alerting: 105. Integration guide created. |
 
 ---

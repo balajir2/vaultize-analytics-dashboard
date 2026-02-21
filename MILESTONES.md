@@ -1,7 +1,7 @@
 # Project Milestones
 
 > **Project**: Vaultize Analytics Platform (On-Prem Log Analytics)
-> **Last Updated**: 2026-02-17
+> **Last Updated**: 2026-02-21
 
 ---
 
@@ -112,7 +112,7 @@
 - ✅ Logs from at least 3 different sources can be ingested (file, syslog, Docker)
 - ✅ Logs properly parsed and indexed in OpenSearch
 - ✅ Can search and view logs in OpenSearch Dashboards
-- ⏳ Ingestion metrics visible in Prometheus/Grafana (Prometheus configured, dashboards pending)
+- ✅ Ingestion metrics visible in Prometheus/Grafana (Fluent Bit, API, Alerting, OpenSearch via exporter)
 
 **Dependencies**: M1 must be complete ✅
 
@@ -144,7 +144,7 @@
 - [x] API documentation structure (OpenAPI/Swagger auto-generated)
 - [x] Sample data generator (scripts/data/generate_sample_logs.py)
 - [x] Regression tests (RT-004 with 15+ test cases)
-- [x] **Unit tests for API code - 89% coverage, 98 tests all passing**
+- [x] **Unit tests for API code - 89% coverage, 103 tests all passing**
 - [x] **Integration tests for OpenSearch connectivity - complete**
 
 **Success Criteria**:
@@ -152,7 +152,7 @@
 - ✅ Can execute searches via API (simple and advanced search endpoints)
 - ✅ Index lifecycle management working (hot/warm/cold/delete) - policies defined
 - ✅ All API endpoints operational and tested manually
-- ✅ **All 98 API tests passing with 89% coverage**
+- ✅ **All 103 API tests passing with 89% coverage**
 
 **Dependencies**: M2 must be complete (80% - sufficient to proceed)
 
@@ -164,7 +164,7 @@
 - Sample data generator creates realistic logs (1,000+ entries)
 - Regression test RT-004 validates all endpoints
 - Query performance: 4-19ms average response times
-- **Testing Complete**: 98 unit tests passing, 0 failures, 89% coverage
+- **Testing Complete**: 103 unit tests passing, 0 failures, 89% coverage
 - Integration tests validate end-to-end workflows
 - Test documentation: analytics/api/tests/README.md and COVERAGE_REPORT.md
 - **Completed**: 2026-02-04 (auth added 2026-02-17)
@@ -257,14 +257,14 @@
 **Target Deliverables**:
 - [x] Unit tests for all Python services (>80% coverage) - **89% API, 81% alerting**
 - [x] Integration tests for Analytics API
-- [x] Analytics API test suite (98 passing unit tests, 0 failures)
-- [x] Alerting service test suite (101 passing unit tests)
+- [x] Analytics API test suite (103 passing unit tests, 0 failures)
+- [x] Alerting service test suite (105 passing unit tests)
 - [x] Integration tests for ingestion pipeline (test scaffolding)
 - [x] E2E tests for complete log flow (test scaffolding)
 - [x] Performance tests (ingestion rate, query latency - test scaffolding)
 - [x] Test directory structure (unit/, integration/, regression/, e2e/, performance/)
 - [x] Pytest configuration (conftest.py with shared fixtures)
-- [x] Regression test registry (REGRESSION_TESTS.md) - RT-001 through RT-018
+- [x] Regression test registry (REGRESSION_TESTS.md) - RT-001 through RT-019
 - [x] Test coverage reporting (pytest-cov, coverage reports)
 - [x] Architecture documentation with key decisions (CLAUDE.md)
 - [x] Technology stack documentation (tech-stack.md with detailed tables)
@@ -278,7 +278,7 @@
 
 **Success Criteria**:
 - ✅ Test suite ready for CI/CD (pytest configured, all tests deterministic)
-- ✅ All 437 tests passing (98 API + 101 alerting + 238 regression)
+- ✅ All 469 tests passing (103 API + 105 alerting + 261 regression)
 - ✅ Test coverage exceeds 80% requirement (89% API, 81% alerting)
 - ✅ Documentation complete — 34 docs, zero dead links
 - ✅ New engineer can deploy system following runbook (quickstart guide ready)
@@ -288,9 +288,9 @@
 **Blockers**: None
 
 **Notes**:
-- Analytics API: 98 tests, 89% coverage (all passing, 0 failures)
-- Alerting service: 101 tests, 81% coverage
-- Regression suite: 238 tests across RT-001 through RT-018
+- Analytics API: 103 tests, 89% coverage (all passing, 0 failures)
+- Alerting service: 105 tests, 81% coverage
+- Regression suite: 261 tests across RT-001 through RT-019
 - Documentation rationalized on 2026-02-17: removed 6 stub files, consolidated into single hub
 
 ---

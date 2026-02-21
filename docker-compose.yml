@@ -180,18 +180,47 @@ services:
     volumes:
       - ./ingestion/configs/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - ./ingestion/configs/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
-      - ./ingestion/sample-logs:/var/log/app-logs:ro  # Shared log files for file-based ingestion
-      - /var/log:/var/log:ro  # Host logs (optional)
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro  # Docker container logs
+      - ./ingestion/sample-logs:/app/logs:ro  # Shared log files for file-based ingestion
     ports:
       - "${FLUENT_BIT_FORWARD_PORT:-24224}:24224"  # Forward input
       - "${FLUENT_BIT_FORWARD_PORT:-24224}:24224/udp"
+      - "${FLUENT_BIT_METRICS_PORT:-2020}:2020"    # Prometheus metrics
     networks:
       - vaultize-network
     depends_on:
       opensearch-node-1:
         condition: service_healthy
     restart: unless-stopped
+
+  # ============================================================================
+  # OpenSearch Exporter (Prometheus metrics for OpenSearch)
+  # ============================================================================
+
+  opensearch-exporter:
+    image: prometheuscommunity/elasticsearch-exporter:v1.7.0
+    container_name: opensearch-exporter
+    hostname: opensearch-exporter
+    command:
+      - '--es.uri=http://opensearch-node-1:9200'
+      - '--es.all'
+      - '--es.indices'
+      - '--es.cluster_settings'
+      - '--es.shards'
+    ports:
+      - "${OPENSEARCH_EXPORTER_PORT:-9114}:9114"
+    networks:
+      - vaultize-network
+    depends_on:
+      opensearch-node-1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9114/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - metrics  # Only start when 'metrics' profile is activated
 
   # ============================================================================
   # Prometheus (Optional: Metrics Collection)

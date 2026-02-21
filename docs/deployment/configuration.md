@@ -3,7 +3,7 @@
 > Complete configuration guide for all deployment environments
 
 **Authors**: Balaji Rajan and Claude (Anthropic)
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-21
 
 ---
 
@@ -100,6 +100,13 @@ ${OPENSEARCH_SCHEME}://${OPENSEARCH_HOST}:${OPENSEARCH_PORT}
 | `FLUENT_BIT_OPENSEARCH_PORT` | `9200` | Output port | `9200` |
 | `FLUENT_BIT_HTTP_PORT` | `2020` | Metrics port | `2020` |
 | `FLUENT_BIT_FORWARD_PORT` | `24224` | Forward input port | `24224` |
+| `FLUENT_BIT_METRICS_PORT` | `2020` | Prometheus metrics port (exposed) | `2020` |
+
+### OpenSearch Exporter (Optional - metrics profile)
+
+| Variable | Default | Description | Example |
+|----------|---------|-------------|---------|
+| `OPENSEARCH_EXPORTER_PORT` | `9114` | Exporter metrics port | `9114` |
 
 ### Prometheus
 
@@ -446,4 +453,4 @@ docker compose config | grep OPENSEARCH_HOST
 
 ---
 
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-21
