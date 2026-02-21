@@ -136,6 +136,7 @@ class AlertScheduler:
         # 4. Send notification if needed
         notification_sent = False
         notification_status = None
+        notification_results = []
 
         if transition.should_notify:
             event_type = "fired" if transition.new_state == AlertState.FIRING else "resolved"
@@ -153,8 +154,23 @@ class AlertScheduler:
             )
             for action in rule.actions:
                 result = await self.notifier.send(action, context)
-                notification_sent = result.success
-                notification_status = "success" if result.success else "failed"
+                notification_results.append({
+                    "action": action.type if hasattr(action, "type") else str(action),
+                    "success": result.success,
+                    "status": "success" if result.success else "failed",
+                })
+
+            # Compute aggregate status from all results
+            if notification_results:
+                successes = sum(1 for r in notification_results if r["success"])
+                total = len(notification_results)
+                notification_sent = successes > 0
+                if successes == total:
+                    notification_status = "success"
+                elif successes > 0:
+                    notification_status = "partial"
+                else:
+                    notification_status = "failed"
 
         # 5. Record history event
         if transition.changed or transition.should_notify:
@@ -169,6 +185,7 @@ class AlertScheduler:
                 condition_met=eval_result.condition_met,
                 notification_sent=notification_sent,
                 notification_status=notification_status,
+                notification_results=notification_results,
                 metadata={"severity": rule.metadata.severity, "category": rule.metadata.category},
                 query_took_ms=query_result.took_ms,
             ))

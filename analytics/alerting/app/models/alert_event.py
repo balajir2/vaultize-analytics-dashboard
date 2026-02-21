@@ -9,7 +9,7 @@ License: Apache 2.0
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -23,7 +23,8 @@ class AlertEvent:
     operator: str = ""
     condition_met: bool = False
     notification_sent: bool = False
-    notification_status: Optional[str] = None  # "success", "failed"
+    notification_status: Optional[str] = None  # "success", "partial", "failed"
+    notification_results: List[Dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     query_took_ms: Optional[int] = None
     error: Optional[str] = None
@@ -39,6 +40,7 @@ class AlertEvent:
             "condition_met": self.condition_met,
             "notification_sent": self.notification_sent,
             "notification_status": self.notification_status,
+            "notification_results": self.notification_results,
             "metadata": self.metadata,
             "query_took_ms": self.query_took_ms,
             "error": self.error,
