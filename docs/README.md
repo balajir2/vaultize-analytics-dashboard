@@ -74,7 +74,8 @@ For system architecture diagrams (Mermaid), see [System Architecture Diagrams](.
 ### Integration
 | Document | Description |
 |----------|-------------|
-| [Log Integration Guide](./integration/log-integration-guide.md) | **How to connect your application's logs to the platform** (file, forward, API methods) |
+| [Installation & Integration Guide](./integration/installation-and-integration-guide.md) | **End-to-end guide**: install the platform and connect it to your existing application |
+| [Log Integration Guide](./integration/log-integration-guide.md) | Detailed log ingestion methods (file, forward, API) with code examples |
 | [DRM Integration Guide](./integration/DRM_INTEGRATION_GUIDE.md) | Specialized guide for integrating DRM/file-security event logs |
 
 ### User Guides
