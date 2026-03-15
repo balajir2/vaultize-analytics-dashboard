@@ -1,0 +1,26 @@
+# OpenSearch Security - Tenants
+#
+# Defines OpenSearch Dashboards tenants for UI-level data isolation.
+# Each Vaultize customer organisation gets their own tenant, provisioned
+# dynamically via the provisioning script. The entries here are the
+# platform-level tenants only.
+#
+# Multi-tenant architecture:
+#   - Each customer org maps to one OpenSearch Dashboards tenant
+#   - Saved objects (dashboards, visualizations) are isolated per tenant
+#   - Data isolation is enforced via Document-Level Security (DLS) on roles
+#
+# Customer tenants are created dynamically — see scripts/ops/provision_tenant.py
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "tenants"
+  config_version: 2
+
+# Admin tenant — full access for platform administrators
+# Note: global_tenant and private tenant are built-in and cannot be defined here
+admin_tenant:
+  reserved: false
+  description: "Admin tenant — Vaultize platform administrators only"

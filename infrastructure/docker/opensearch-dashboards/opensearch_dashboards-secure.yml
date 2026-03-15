@@ -3,6 +3,9 @@
 # Used when running with docker-compose.security.yml overlay.
 # Connects to OpenSearch over HTTPS with authentication.
 #
+# NOTE: server.ssl is NOT enabled here — Nginx terminates external TLS.
+# Internal traffic (Nginx → Dashboards on port 5601) is plain HTTP.
+#
 # Authors: Balaji Rajan and Claude (Anthropic)
 # License: Apache 2.0
 
@@ -11,20 +14,15 @@ server.host: "0.0.0.0"
 server.port: 5601
 server.name: "vaultize-dashboards"
 
-# TLS for Dashboards itself
-server.ssl.enabled: true
-server.ssl.certificate: /usr/share/opensearch-dashboards/config/certs/node.pem
-server.ssl.key: /usr/share/opensearch-dashboards/config/certs/node-key.pem
-
-# OpenSearch connection (HTTPS)
+# OpenSearch connection (HTTPS to internal OpenSearch cluster)
 opensearch.hosts: ["https://opensearch-node-1:9200"]
-opensearch.ssl.verificationMode: certificate
-opensearch.ssl.certificateAuthorities: ["/usr/share/opensearch-dashboards/config/certs/ca.pem"]
+opensearch.ssl.verificationMode: none
 opensearch.username: "admin"
-opensearch.password: "admin"
+opensearch.password: "vaultize"
+opensearch.requestHeadersAllowlist: ["securitytenant", "Authorization"]
 
-# Security plugin
+# Security plugin multi-tenancy (requires DISABLE_SECURITY_DASHBOARDS_PLUGIN=false)
 opensearch_security.multitenancy.enabled: true
 opensearch_security.multitenancy.tenants.preferred: ["Private", "Global"]
 opensearch_security.readonly_mode.roles: ["kibana_read_only"]
-opensearch_security.cookie.secure: true
+opensearch_security.cookie.secure: false

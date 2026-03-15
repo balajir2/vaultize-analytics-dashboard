@@ -5,6 +5,55 @@
 
 ---
 
+## Session 2026-03-15 (Multi-Tenant DLP Platform + AWS PoC)
+
+**Date**: 2026-03-15
+**Status**: All 6 dashboard TODO items complete. Live platform with security enabled and sample data.
+
+### What Was Accomplished
+
+1. **OpenSearch security plugin enabled** on live EC2 (vaultize.duckdns.org)
+   - Fixed: DISABLE_SECURITY_PLUGIN=false in overlay (base had =true)
+   - Fixed: nodes_dn in opensearch-secure.yml (transport auth was failing)
+   - Fixed: securityadmin.sh needed PKCS#8 key format (generate_certs.py updated)
+   - Ran securityadmin.sh — all 10 config types loaded, cluster GREEN
+   - Fixed: Dashboards using https healthcheck → http (no internal TLS)
+   - Fixed: DISABLE_SECURITY_DASHBOARDS_PLUGIN=false in overlay
+   - Fixed: analytics-api/alerting healthchecks use Python (no curl in container)
+
+2. **Multi-tenant provisioning**
+   - provision_tenant.py: creates tenant + DLS role + user + role mapping
+   - Uses bcrypt hash (not plaintext) to bypass OpenSearch password strength validator
+   - DLS verified: acme-corp sees 139 events, techstart sees 156, admin sees 295
+
+3. **Event schema + index template**
+   - 90+ fields across CDP, EFSS, DRM, EMAIL modules
+   - All data categories: PII, financial, health, IP, CUI, export-controlled, classified
+   - Strict mappings applied as index template vaultize-events-*
+
+4. **Sample data**
+   - 295 events across 2 tenants (acme-corp: 141, techstart: 159 generated, minus 5 circuit breaker)
+   - Covers all 4 modules, 30-day history, anomalies, cross-border transfers
+
+5. **Documentation**
+   - docs/schemas/vaultize-event-schema.md
+   - docs/integration/cdp-integration-guide.md
+   - docs/operations/grafana-vs-dashboards.md
+   - configs/index-templates/vaultize-events.json
+
+### Current State
+- Platform: https://vaultize.duckdns.org — all 10 containers healthy
+- Login: admin/vaultize (full access), acme-corp/AcmeTest@123 (DLS-filtered), techstart/TechStart123 (DLS-filtered)
+- Sample data: 295 events in vaultize-events-2026.02.* and vaultize-events-2026.03.* indices
+- Multi-tenancy: DLS isolation confirmed
+
+### Next Steps
+- Build DLP dashboards in OpenSearch Dashboards (file journey, sharing activity, anomaly heatmaps)
+- Configure OpenSearch alerting rules for DLP events
+- Share CDP integration guide with Vaultize developer
+
+---
+
 ## Session 2026-02-22 (Security Hardening)
 
 **Date**: 2026-02-22

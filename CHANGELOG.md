@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-03-15 (Multi-Tenant DLP Platform + AWS PoC)
+
+### Added
+- **AWS PoC deployment**: EC2 t3.xlarge (us-east-1), Duck DNS subdomain, Let's Encrypt TLS via Nginx
+- **OpenSearch security plugin enabled**: DISABLE_SECURITY_PLUGIN=false in docker-compose.security.yml for all 3 nodes
+- **Multi-tenant provisioning**: `scripts/ops/provision_tenant.py` — creates tenant, DLS role, user, role mapping in one command
+- **Document-Level Security (DLS)**: Each customer org role has `{"term": {"organization_id": "<org>"}}` filter — isolation confirmed
+- **Vaultize event schema**: `docs/schemas/vaultize-event-schema.md` covering CDP, EFSS, DRM, EMAIL modules + all data categories
+- **OpenSearch index template**: `configs/index-templates/vaultize-events.json` with strict mappings, applied to cluster
+- **Sample data generator**: `scripts/ops/generate_sample_data.py` — 295 events across 2 tenants, 30 days, all modules
+- **CDP integration guide**: `docs/integration/cdp-integration-guide.md` — step-by-step for Vaultize developer
+- **Grafana vs Dashboards guide**: `docs/operations/grafana-vs-dashboards.md`
+- **Security config files**: action_groups.yml, tenants.yml, nodes_dn.yml, allowlist.yml, whitelist.yml
+
+### Fixed
+- **docker-compose.security.yml healthchecks**: Changed `admin:admin` → `admin:${OPENSEARCH_ADMIN_PASSWORD:-vaultize}`, `https://` → `http://` for Dashboards (no internal TLS)
+- **DISABLE_SECURITY_DASHBOARDS_PLUGIN**: Now explicitly set to `false` in security overlay (base had `true`)
+- **generate_certs.py**: Private keys now saved in PKCS#8 format (required by securityadmin.sh; TraditionalOpenSSL was rejected)
+- **initialize_security.sh**: Removed broken curl wait loop (curl returns 503 before security initialized); added direct securityadmin invocation
+- **analytics-api healthcheck**: Changed `curl -f` to Python `urllib.request` (curl not in Python slim container)
+- **alerting-service healthcheck**: Same fix
+- **opensearch-secure.yml**: Added `plugins.security.nodes_dn` for inter-node transport authentication
+
+### Changed
+- OpenSearch Dashboards config: Removed `server.ssl.enabled` (Nginx handles TLS); added `opensearch.requestHeadersAllowlist` for security plugin
+
+---
+
 ## [1.2.1] - 2026-02-22 (Codex Review Followup)
 
 ### Fixed

@@ -2,14 +2,22 @@
 
 ## Project Context
 
-This repository contains an **on-premise analytics and observability platform** inspired by **Splunk**, built entirely using **open-source components**.
+This repository contains a **multi-tenant analytics and observability platform** for the **Vaultize data security product**, built entirely using open-source components. It is inspired by Splunk in architecture but purpose-built for DLP (Data Loss Prevention) and data security analytics.
+
+The platform serves **Vaultize customers** — each customer organisation is a tenant that logs in and sees only their own data.
+
+**Vaultize modules this platform analyses:**
+* **CDP** — Continuous Data Protection (endpoint backup via folder mapping)
+* **EFSS** — Enterprise File Sync and Share (secure sharing)
+* **DRM** — Persistent document protection (via EFSS)
+* **Email Body Protection**
 
 The system is intended to be:
 
-* Self-hosted / on-prem deployable
+* Multi-tenant — one deployment, many customer organisations, strict data isolation
+* Self-hosted / on-prem deployable (datacenter is the final target)
 * Production-grade
 * Modular and extensible
-* Focused on **log analytics first**
 
 This is **not** a cloud-native SaaS project and **must not introduce managed cloud dependencies**.
 
@@ -19,13 +27,30 @@ This is **not** a cloud-native SaaS project and **must not introduce managed clo
 
 Build a platform that supports:
 
-* Centralized log ingestion
-* Search and analytics over logs/events
-* Dashboards and visualizations
-* Alerting on log-derived signals
-* Optional metrics integration
+* Centralised ingestion of Vaultize security events (CDP, EFSS, DRM, Email)
+* Per-tenant analytics — each customer sees only their own data
+* File lifecycle and user behaviour dashboards
+* Alerting on security policy violations
+* Compliance reporting across NIST, PII, financial, health, and other data categories
 
 The primary engine is **OpenSearch** (self-hosted).
+
+---
+
+## Multi-Tenancy Architecture
+
+**Approach**: Shared OpenSearch index + Document-Level Security (DLS). See full ADR in [docs/architecture/decisions.md](docs/architecture/decisions.md).
+
+**Critical rule**: Every event document **must** include `organization_id` as the first field. Without it, tenant isolation breaks.
+
+**Tenant provisioning per customer**:
+1. Create OpenSearch user with hashed password
+2. Create role with DLS filter: `{ "term": { "organization_id": "<org-id>" } }`
+3. Assign role to user
+4. Create OpenSearch Dashboards tenant for the org
+5. Customer logs into `https://vaultize.duckdns.org` — sees only their data
+
+See provisioning scripts in `scripts/ops/provision_tenant.py` (to be created).
 
 ---
 
@@ -33,7 +58,7 @@ The primary engine is **OpenSearch** (self-hosted).
 
 Claude **must respect these constraints** when generating code, structure, or recommendations:
 
-* **Deployment**: On-prem only
+* **Deployment**: On-prem only (datacenter is the final target)
 * **Search engine**: OpenSearch (self-hosted)
 * **Visualization**: OpenSearch Dashboards (primary), Grafana (optional)
 * **Log ingestion**: Fluent Bit preferred, Logstash optional
@@ -42,6 +67,58 @@ Claude **must respect these constraints** when generating code, structure, or re
 * **No SaaS dependencies**
 * **No proprietary software**
 * **No assumption of Kubernetes in v1** (Docker Compose first)
+
+---
+
+## AWS Usage Policy (Temporary PoC Only)
+
+The platform is currently deployed on AWS **strictly as IaaS** — rented compute, storage, and networking only. AWS is a temporary host, not a platform. The final target is an on-prem datacenter.
+
+### Permitted AWS Usage
+
+| Service | Permitted Use | Datacenter Equivalent |
+|---|---|---|
+| EC2 | Run the Docker Compose stack | Bare metal / VM |
+| EBS | Block storage for Docker volumes | Local disk / SAN |
+| VPC | Private network isolation | VLAN / private LAN |
+| Security Groups | Firewall rules | iptables / pfSense |
+| Elastic IP | Stable public IP | Static IP assignment |
+| S3 | Backups and log file uploads only | MinIO (S3-compatible) |
+
+### Prohibited AWS Usage
+
+Never use the following — they create migration blockers:
+
+* ❌ Amazon OpenSearch Service — use self-hosted OpenSearch on EC2
+* ❌ ECS / EKS / Fargate — use Docker Compose directly on EC2
+* ❌ ALB / NLB — use Nginx on EC2
+* ❌ CloudWatch — use Prometheus + Grafana (already in the stack)
+* ❌ AWS Secrets Manager — use `.env` files or self-hosted Vault
+* ❌ RDS / ElastiCache — not needed; avoid introducing them
+* ❌ SQS / SNS / Lambda — no event-driven AWS glue
+* ❌ AWS Certificate Manager — use Let's Encrypt or self-signed certs
+* ❌ Route 53 — use any DNS provider; just an A record
+
+### The Portability Test
+
+Before introducing any AWS service or SDK call, ask:
+> *"Can I replace this with a self-hosted equivalent by changing one config value?"*
+
+If the answer is **no**, do not use it.
+
+| Acceptable | Why |
+|---|---|
+| S3 via boto3 | `endpoint_url` → MinIO, zero code change |
+| EC2 instance profile | Replaced by env vars or Vault in datacenter |
+
+### Migration Path
+
+The deployment is designed so that moving to a datacenter requires:
+1. Provision VMs with Docker + Docker Compose
+2. Change `S3_ENDPOINT_URL` to point at MinIO
+3. Update the DNS A record
+4. Restore OpenSearch snapshot
+5. Terminate EC2 — **no code changes, no refactoring**
 
 ---
 
@@ -167,70 +244,14 @@ When adding new functionality:
 4. **Document test coverage** in code comments and docstrings
 5. **Never commit untested code**
 
-### Regression Test Suite Structure
+### Test Standards (non-negotiable)
 
-```
-tests/
-├── regression/
-│   ├── test_regression_001_opensearch_connection.py
-│   ├── test_regression_002_index_creation.py
-│   ├── test_regression_003_log_ingestion.py
-│   └── README.md  # Documents all regression tests
-├── unit/
-│   ├── analytics/
-│   ├── alerting/
-│   └── indexing/
-├── integration/
-│   ├── test_opensearch_integration.py
-│   ├── test_fluent_bit_integration.py
-│   └── test_api_integration.py
-└── e2e/
-    ├── test_log_flow.py
-    ├── test_alert_flow.py
-    └── test_dashboard_flow.py
-```
+- Tests must always **pass or fail definitively** — never implement skip logic or conditional skipping
+- All tests must run with **real data**, not fabricated placeholders
+- If a test fails, fix the underlying issue — do not suppress or work around the failure
+- **Failure to provide tests for new functionality is considered incomplete work**
 
-### Test Naming Conventions
-
-- **Unit**: `test_<function_name>_<scenario>.py`
-- **Integration**: `test_<service>_integration.py`
-- **Regression**: `test_regression_<number>_<issue_description>.py`
-- **E2E**: `test_<flow_name>_flow.py`
-
-### Running Tests
-
-```bash
-# All tests
-pytest
-
-# Unit tests only
-pytest tests/unit/
-
-# Integration tests
-pytest tests/integration/
-
-# Regression suite
-pytest tests/regression/
-
-# With coverage
-pytest --cov=analytics --cov=ingestion --cov-report=html
-```
-
-### Test Quality Standards
-
-- Tests must be **isolated** (no dependencies between tests)
-- Tests must be **deterministic** (same input = same output)
-- Tests must be **fast** (unit tests < 100ms, integration < 5s)
-- Tests must be **readable** (clear arrange-act-assert structure)
-- Tests must **clean up** after themselves (no side effects)
-
-**Failure to provide tests for new functionality is considered incomplete work.**
-
-### Test Fix Standards
-
-- Tests must always **pass or fail definitively** - never implement skip logic or conditional skipping
-- All tests should run with **real data**, not fabricated placeholders
-- If a test fails, fix the underlying issue - do not suppress or work around the failure
+See [tests/README.md](tests/README.md) for directory structure, naming conventions, and run commands.
 
 ---
 
@@ -319,227 +340,20 @@ A senior engineer should be able to:
 
 ## Key Architecture Decisions
 
-This section documents critical architectural decisions made for the platform. Understanding these decisions helps maintain consistency and avoid revisiting settled questions.
+10 foundational decisions govern this platform. Full ADRs (rationale, alternatives, impact) are in [docs/architecture/decisions.md](docs/architecture/decisions.md).
 
-### Decision 1: OpenSearch Over Elasticsearch
-
-**Decision**: Use OpenSearch as the core search and analytics engine.
-
-**Rationale**:
-- **Open Source License**: Apache 2.0 vs Elastic License 2.0 (ELv2)
-- **Community-Driven**: Managed by AWS but open governance
-- **API Compatibility**: Elasticsearch-compatible APIs (easy migration)
-- **No Vendor Lock-in**: True open source allows self-hosting without restrictions
-- **Active Development**: Regular releases, security patches, new features
-
-**Alternatives Considered**:
-- Elasticsearch (rejected due to licensing concerns post-7.10)
-- Solr (less suitable for log analytics use case)
-- ClickHouse (optimized for metrics, not full-text search)
-
-**Impact**: All code, configurations, and documentation assume OpenSearch APIs.
-
----
-
-### Decision 2: Docker Compose First, Kubernetes Later
-
-**Decision**: Use Docker Compose for v1 deployment, defer Kubernetes to post-MVP.
-
-**Rationale**:
-- **Simplicity**: Easier to develop, test, and deploy locally
-- **On-Prem Friendly**: No cluster management overhead
-- **Faster Iteration**: Simple YAML, no complex orchestration
-- **Sufficient for Small-Medium Scale**: Handles up to ~100K logs/sec
-- **Lower Barrier to Entry**: Most engineers familiar with Docker
-
-**Alternatives Considered**:
-- Kubernetes from day 1 (rejected: too complex for initial development)
-- Docker Swarm (rejected: less popular, unclear future)
-- Nomad (rejected: smaller ecosystem)
-
-**Impact**: Infrastructure code starts with docker-compose.yml; Kubernetes manifests created later.
-
----
-
-### Decision 3: Python for Services, Not Java/Go
-
-**Decision**: Use Python 3.11+ for analytics API, alerting, and operational services.
-
-**Rationale**:
-- **Excellent OpenSearch Client**: Official opensearch-py library
-- **Fast Development**: Less boilerplate than Java/Go
-- **Rich Ecosystem**: Libraries for data processing, scheduling, HTTP
-- **Team Expertise**: Broader accessibility
-- **FastAPI Framework**: Modern, async, auto-generated API docs
-
-**Alternatives Considered**:
-- Go (rejected: more boilerplate, fewer data processing libraries)
-- Java (rejected: heavy runtime, slower development)
-- Node.js (rejected: less suitable for data-heavy processing)
-
-**Impact**: All service code in Python; expect async/await patterns.
-
----
-
-### Decision 4: Fluent Bit Over Logstash
-
-**Decision**: Use Fluent Bit as the primary log collector.
-
-**Rationale**:
-- **Lightweight**: ~450KB binary, minimal memory footprint (~1MB)
-- **High Performance**: Written in C, handles high throughput
-- **Cloud Native**: CNCF project, designed for containers
-- **Lower Resource Cost**: Important for on-prem deployments
-- **Sufficient for Most Cases**: Built-in parsers handle 90% of use cases
-
-**Alternatives Considered**:
-- Logstash (optional for complex parsing; JVM overhead too high for default)
-- Fluentd (Ruby-based, higher memory usage)
-- Filebeat (Elastic stack, requires Elasticsearch)
-
-**Impact**: Default ingestion pipeline uses Fluent Bit; Logstash available for edge cases.
-
----
-
-### Decision 5: Configuration-Driven Over Code-Driven
-
-**Decision**: Prefer YAML/JSON configuration files over hardcoded logic.
-
-**Rationale**:
-- **No Redeployment**: Changes don't require code recompilation
-- **Version Control**: Config changes tracked in Git
-- **Environment Separation**: Different configs for dev/staging/prod
-- **User-Friendly**: Operators can modify without coding knowledge
-- **Testable**: Config validation separate from application logic
-
-**Examples**:
-- Index templates: YAML files, not Python code
-- Alert rules: JSON definitions, not hardcoded thresholds
-- ILM policies: YAML configuration
-- Fluent Bit pipelines: Configuration files
-
-**Impact**: Expect configs/ directory to be extensive; services load config at runtime.
-
----
-
-### Decision 6: Logs First, Metrics Complementary
-
-**Decision**: Logs are the primary data type; metrics (Prometheus) are optional and complementary.
-
-**Rationale**:
-- **Root Cause Analysis**: Logs provide event-level detail
-- **Forensics**: Can reconstruct what happened from logs
-- **Flexibility**: Logs can be aggregated into metrics, but not vice versa
-- **Platform Focus**: Competing with Splunk (log analytics), not Datadog (APM)
-- **Metrics for Trends**: Prometheus handles aggregated trends, not event details
-
-**Mental Model**:
-- **Logs**: "Why did request X fail at timestamp Y?" (forensics)
-- **Metrics**: "What's the error rate trend over the last hour?" (monitoring)
-
-**Impact**: OpenSearch is primary data store; Prometheus is optional for system health.
-
----
-
-### Decision 7: Webhook-Based Alerting
-
-**Decision**: Use webhooks as the primary notification transport for alerts.
-
-**Rationale**:
-- **Universal Protocol**: Works with Slack, Teams, PagerDuty, custom endpoints
-- **Decoupled**: Alert engine doesn't need to know notification specifics
-- **Extensible**: Easy to add new integrations via webhook receivers
-- **Standard**: De facto standard for event notifications
-
-**Alternatives Considered**:
-- Email only (rejected: too limited, delivery delays)
-- Hardcoded integrations (rejected: not extensible)
-- Message queue (rejected: too complex for v1)
-
-**Impact**: Alert service POSTs JSON to configured webhook URLs.
-
----
-
-### Decision 8: On-Prem Only, No Cloud Dependencies
-
-**Decision**: System must be fully self-hosted with no managed cloud services.
-
-**Rationale**:
-- **Target Market**: Enterprises with on-prem requirements (compliance, data sovereignty)
-- **Cost Predictability**: No cloud billing surprises
-- **Data Control**: Logs stay within customer infrastructure
-- **Vendor Independence**: Not tied to AWS/GCP/Azure availability or pricing
-
-**Hard Constraints**:
-- ❌ No AWS OpenSearch Service
-- ❌ No CloudWatch, Datadog, or SaaS monitoring
-- ❌ No managed Kafka, RDS, etc.
-- ✅ Docker-based, self-contained deployment
-
-**Impact**: All documentation and code assumes self-hosted deployment.
-
----
-
-### Decision 9: Threshold-Based Alerting Initially
-
-**Decision**: V1 alerting uses threshold-based rules; defer ML-based anomaly detection.
-
-**Rationale**:
-- **Simplicity**: Easier to implement and understand
-- **Predictability**: Users know exactly when alerts fire
-- **Sufficient for Most Cases**: 80% of alerts are threshold-based
-- **No Training Data Required**: Works from day 1
-- **ML as Enhancement**: Can add later without breaking existing alerts
-
-**Examples**:
-- "Alert if error count > 100 in 5 minutes"
-- "Alert if 95th percentile latency > 500ms"
-
-**Impact**: Alert rules defined with simple operators (gt, lt, eq); ML features post-MVP.
-
----
-
-### Decision 10: Mono-Repo Structure
-
-**Decision**: Single repository with clear separation of concerns, not microrepo.
-
-**Rationale**:
-- **Atomic Changes**: Infrastructure + code changes in single commit
-- **Easier Development**: Clone once, see everything
-- **Consistent Versioning**: All components versioned together
-- **Simplified CI/CD**: One pipeline for entire platform
-- **Clear Structure**: Directories enforce separation
-
-**Structure**:
-```
-infrastructure/  → deployment configs
-ingestion/       → log collection configs
-analytics/       → services (API, alerting, indexing)
-configs/         → index templates, ILM, alert rules
-dashboards/      → visualizations and dashboards
-scripts/         → operational tooling
-docs/            → documentation
-tests/           → all tests
-```
-
-**Impact**: Single Git repo; directories must maintain clear boundaries.
-
----
-
-### Decision Summary Table
-
-| Decision | Rationale | Trade-off | Status |
-|----------|-----------|-----------|--------|
-| OpenSearch over Elasticsearch | Open source licensing | Smaller community than Elasticsearch | ✅ Final |
-| Docker Compose first | Simplicity, on-prem friendly | Less scalable than K8s | ✅ Final |
-| Python for services | Fast development, good libraries | Slower runtime than Go | ✅ Final |
-| Fluent Bit over Logstash | Lightweight, high performance | Less powerful parsing | ✅ Final |
-| Configuration-driven | Flexibility, no redeployment | More config files to manage | ✅ Final |
-| Logs first, metrics complementary | Forensics capability | Metrics storage separate | ✅ Final |
-| Webhook-based alerting | Universal, extensible | Requires webhook receiver | ✅ Final |
-| On-prem only | Data sovereignty, cost control | No managed service convenience | ✅ Final |
-| Threshold alerting initially | Simple, predictable | Less intelligent than ML | ✅ Final |
-| Mono-repo | Atomic changes, easy development | Larger repo size | ✅ Final |
+| # | Decision | Choice | Trade-off |
+|---|---|---|---|
+| 1 | Search engine | OpenSearch over Elasticsearch | Open source licensing |
+| 2 | Deployment | Docker Compose first, K8s later | Less scalable initially |
+| 3 | Language | Python 3.11+ | Slower runtime than Go |
+| 4 | Log collector | Fluent Bit over Logstash | Less powerful parsing |
+| 5 | Config approach | YAML/JSON-driven over code | More config files |
+| 6 | Data primary type | Logs first, metrics complementary | Separate metrics storage |
+| 7 | Alerts transport | Webhooks | Requires receiver endpoint |
+| 8 | Deployment model | On-prem only, no cloud dependencies | No managed service convenience |
+| 9 | Alert logic | Threshold-based (no ML in v1) | Less intelligent |
+| 10 | Repo structure | Mono-repo | Larger repo size |
 
 ---
 
@@ -581,4 +395,14 @@ tests/           → all tests
 **When to update**: Before the user ends the session (e.g., phrases like "let's stop for today", "closing for the day", "that's all for now", etc.)
 
 **Purpose**: These files serve as the primary mechanism for session continuity since conversation context doesn't persist between sessions.
+
+---
+
+## AWS Deployment
+
+**CLI profile**: `vaultize` | **Account**: `211125671504` | **IAM user**: `vaultize-poc`
+
+All resources prefixed `vaultize-` with tag `Project=vaultize`. All CLI and boto3 calls use `--profile vaultize` / `boto3.Session(profile_name="vaultize")`.
+
+See full configuration, naming conventions, and cost guide: [docs/deployment/aws.md](docs/deployment/aws.md)
 

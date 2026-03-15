@@ -1,0 +1,11 @@
+# OpenSearch Security - Node Distinguished Names (Dynamic Config)
+#
+# Allows dynamically updating the list of trusted node DNs without restarting.
+# Static node DNs are configured in opensearch-secure.yml via plugins.security.nodes_dn.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "nodesdn"
+  config_version: 2

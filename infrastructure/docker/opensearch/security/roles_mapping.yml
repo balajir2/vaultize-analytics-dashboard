@@ -20,6 +20,11 @@ all_access:
   backend_roles:
     - "admin"
 
+security_rest_api_access:
+  reserved: false
+  backend_roles:
+    - "admin"
+
 # Log writers (Fluent Bit)
 log_writer:
   reserved: false

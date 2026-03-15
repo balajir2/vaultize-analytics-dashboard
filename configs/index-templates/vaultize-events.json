@@ -1,0 +1,120 @@
+{
+  "index_patterns": ["vaultize-events-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "index.refresh_interval": "5s",
+      "index.codec": "best_compression"
+    },
+    "mappings": {
+      "dynamic": "strict",
+      "properties": {
+
+        "organization_id":    { "type": "keyword" },
+        "tenant_name":        { "type": "keyword" },
+        "event_id":           { "type": "keyword" },
+        "event_type":         { "type": "keyword" },
+        "module":             { "type": "keyword" },
+        "@timestamp":         { "type": "date" },
+        "schema_version":     { "type": "keyword" },
+
+        "user_id":            { "type": "keyword" },
+        "user_email":         { "type": "keyword" },
+        "user_display_name":  { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+        "user_department":    { "type": "keyword" },
+        "user_group":         { "type": "keyword" },
+        "user_location":      { "type": "keyword" },
+        "user_device_id":     { "type": "keyword" },
+        "user_ip":            { "type": "ip" },
+
+        "file_id":            { "type": "keyword" },
+        "file_name":          { "type": "keyword" },
+        "file_name_text":     { "type": "text" },
+        "file_extension":     { "type": "keyword" },
+        "file_size_bytes":    { "type": "long" },
+        "file_path":          { "type": "keyword" },
+        "file_hash_sha256":   { "type": "keyword" },
+        "file_mime_type":     { "type": "keyword" },
+
+        "data_classification":       { "type": "keyword" },
+        "nist_impact_level":         { "type": "keyword" },
+        "contains_pii":              { "type": "boolean" },
+        "contains_sensitive_pii":    { "type": "boolean" },
+        "contains_financial_data":   { "type": "boolean" },
+        "contains_health_data":      { "type": "boolean" },
+        "contains_ip":               { "type": "boolean" },
+        "contains_export_controlled":{ "type": "boolean" },
+        "contains_cui":              { "type": "boolean" },
+        "contains_classified":       { "type": "boolean" },
+        "geo_restricted":            { "type": "boolean" },
+        "geo_restriction_region":    { "type": "keyword" },
+        "ai_use_restricted":         { "type": "boolean" },
+        "data_categories":           { "type": "keyword" },
+
+        "cdp_backup_id":             { "type": "keyword" },
+        "cdp_folder_path":           { "type": "keyword" },
+        "cdp_folder_mapping_id":     { "type": "keyword" },
+        "cdp_retention_policy":      { "type": "keyword" },
+        "cdp_backup_size_bytes":     { "type": "long" },
+        "cdp_version_number":        { "type": "integer" },
+        "cdp_restore_point":         { "type": "date" },
+        "cdp_device_os":             { "type": "keyword" },
+        "cdp_agent_version":         { "type": "keyword" },
+
+        "efss_share_id":             { "type": "keyword" },
+        "efss_share_type":           { "type": "keyword" },
+        "efss_recipient_email":      { "type": "keyword" },
+        "efss_recipient_domain":     { "type": "keyword" },
+        "efss_recipient_is_external":{ "type": "boolean" },
+        "efss_permission_type":      { "type": "keyword" },
+        "efss_share_expiry":         { "type": "date" },
+        "efss_share_has_password":   { "type": "boolean" },
+        "efss_access_location_country": { "type": "keyword" },
+        "efss_access_location_city": { "type": "keyword" },
+        "efss_chain_depth":          { "type": "integer" },
+        "efss_shared_from_user_id":  { "type": "keyword" },
+        "efss_domain_whitelist_match": { "type": "boolean" },
+        "efss_ip_whitelist_match":   { "type": "boolean" },
+
+        "drm_document_id":           { "type": "keyword" },
+        "drm_policy_id":             { "type": "keyword" },
+        "drm_policy_name":           { "type": "keyword" },
+        "drm_protection_expiry":     { "type": "date" },
+        "drm_watermark_text":        { "type": "keyword" },
+        "drm_print_allowed":         { "type": "boolean" },
+        "drm_copy_allowed":          { "type": "boolean" },
+        "drm_offline_access_allowed":{ "type": "boolean" },
+        "drm_access_count":          { "type": "integer" },
+        "drm_revocation_reason":     { "type": "keyword" },
+
+        "email_message_id":          { "type": "keyword" },
+        "email_subject":             { "type": "keyword" },
+        "email_sender":              { "type": "keyword" },
+        "email_recipients":          { "type": "keyword" },
+        "email_recipient_domains":   { "type": "keyword" },
+        "email_has_external_recipient": { "type": "boolean" },
+        "email_attachment_count":    { "type": "integer" },
+        "email_attachment_file_ids": { "type": "keyword" },
+        "email_body_protected":      { "type": "boolean" },
+        "email_policy_id":           { "type": "keyword" },
+        "email_direction":           { "type": "keyword" },
+
+        "anomaly_score":             { "type": "float" },
+        "anomaly_flags":             { "type": "keyword" },
+        "baseline_period_days":      { "type": "integer" },
+        "is_anomaly":                { "type": "boolean" },
+
+        "source_country":            { "type": "keyword" },
+        "destination_country":       { "type": "keyword" },
+        "cross_border_transfer":     { "type": "boolean" },
+        "sovereignty_violation":     { "type": "boolean" }
+      }
+    }
+  },
+  "_meta": {
+    "description": "Vaultize Analytics Events — all modules (CDP, EFSS, DRM, EMAIL)",
+    "version": "1.0",
+    "author": "Balaji Rajan and Claude (Anthropic)"
+  }
+}

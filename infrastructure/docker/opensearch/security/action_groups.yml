@@ -1,0 +1,31 @@
+# OpenSearch Security - Action Groups
+#
+# Defines reusable groups of actions that can be referenced in roles.
+# This file intentionally left minimal — OpenSearch uses built-in action groups
+# for standard operations. Custom action groups for Vaultize are defined here.
+#
+# Authors: Balaji Rajan and Claude (Anthropic)
+# License: Apache 2.0
+
+_meta:
+  type: "actiongroups"
+  config_version: 2
+
+# Vaultize read-only action group (for viewer role)
+VAULTIZE_READ:
+  reserved: false
+  allowed_actions:
+    - "indices:data/read/*"
+    - "indices:admin/mappings/get"
+    - "indices:admin/validate/*"
+    - "indices:admin/get"
+  description: "Read-only access to Vaultize indices"
+
+# Vaultize write action group (for ingestion role)
+VAULTIZE_WRITE:
+  reserved: false
+  allowed_actions:
+    - "indices:data/write/*"
+    - "indices:admin/create"
+    - "indices:admin/mapping/put"
+  description: "Write access to Vaultize indices"

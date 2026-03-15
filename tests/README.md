@@ -536,4 +536,39 @@ Track these metrics to maintain test quality:
 
 ---
 
-**Last Updated**: 2026-02-17
+## Test Quality Standards
+
+- Tests must be **isolated** (no dependencies between tests)
+- Tests must be **deterministic** (same input = same output)
+- Tests must be **fast** (unit tests < 100ms, integration < 5s)
+- Tests must be **readable** (clear arrange-act-assert structure)
+- Tests must **clean up** after themselves (no side effects)
+
+## Test Fix Standards
+
+- Tests must always **pass or fail definitively** — never implement skip logic or conditional skipping
+- All tests must run with **real data**, not fabricated placeholders
+- If a test fails, fix the underlying issue — do not suppress or work around the failure
+- **Failure to provide tests for new functionality is considered incomplete work**
+
+## Naming Conventions
+
+| Type | Pattern | Example |
+|---|---|---|
+| Unit | `test_<function_name>_<scenario>.py` | `test_search_query_empty_index.py` |
+| Integration | `test_<service>_integration.py` | `test_opensearch_integration.py` |
+| Regression | `test_regression_<number>_<description>.py` | `test_regression_030_s3_upload.py` |
+| E2E | `test_<flow_name>_flow.py` | `test_log_ingestion_flow.py` |
+
+## Test Counts (as of 2026-02-22)
+
+| Suite | Count |
+|---|---|
+| Regression (RT-001–RT-029) | 336 passed |
+| Analytics API unit tests | 103 passed |
+| Alerting unit tests | 105 passed |
+| **Total** | **544 passed** |
+
+---
+
+**Last Updated**: 2026-03-15

@@ -1,7 +1,7 @@
 # Project TODO
 
-> **Last Updated**: 2026-02-22
-> **Status**: All milestones complete. Platform at 100%. Security hardening complete (11 commits).
+> **Last Updated**: 2026-03-15
+> **Status**: Multi-tenant DLP platform. OpenSearch security + DLS active. Sample data indexed. All TODO items complete.
 
 ---
 
@@ -61,8 +61,26 @@
 - [x] RT-027 through RT-029 regression tests (16 new tests)
 - [x] Full regression suite: 336 passed, API: 103 passed, Alerting: 105 passed (544 total)
 
+### Completed Today (2026-03-15)
+- [x] AWS PoC deployment to EC2 (t3.xlarge, us-east-1, vaultize.duckdns.org + Let's Encrypt TLS)
+- [x] OpenSearch security plugin enabled (DLS multi-tenancy, admin bcrypt hash, securityadmin.sh)
+- [x] Fixed docker-compose.security.yml: DISABLE_SECURITY_PLUGIN=false, healthchecks, Dashboards config
+- [x] Provisioned multi-tenant resources (acme-corp, techstart) — DLS isolation verified
+- [x] Created provision_tenant.py: automated 4-step org provisioning (tenant+role+user+mapping)
+- [x] Vaultize event schema: all 4 modules (CDP, EFSS, DRM, EMAIL), all data categories
+- [x] OpenSearch index template: vaultize-events-* with strict mappings applied to cluster
+- [x] Sample data: 295 events across 2 tenants, 30 days, all modules — DLS isolation confirmed
+- [x] CDP integration guide: step-by-step for Vaultize developer
+- [x] Grafana vs OpenSearch Dashboards decision guide
+- [x] Fixed analytics-api healthcheck (Python instead of curl, not in container)
+- [x] generate_certs.py updated to output PKCS#8 keys (required by securityadmin.sh)
+- [x] initialize_security.sh rewritten (no broken curl wait loop)
+- [x] whitelist.yml, allowlist.yml, action_groups.yml, nodes_dn.yml, tenants.yml created
+
 ### Pending
-- [ ] Manual UI testing of full application stack
+- [ ] Manual UI testing with tenant credentials (acme-corp, techstart)
+- [ ] Build DLP dashboards in OpenSearch Dashboards (file journey, sharing activity)
+- [ ] Configure OpenSearch alerting rules for DLP events
 
 ---
 

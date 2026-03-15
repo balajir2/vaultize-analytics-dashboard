@@ -22,7 +22,7 @@ services:
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
-      # Security plugin ENABLED (no DISABLE_SECURITY_PLUGIN)
+      - "DISABLE_SECURITY_PLUGIN=false"
     volumes:
       - opensearch-data-1:/usr/share/opensearch/data
       - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
@@ -33,7 +33,7 @@ services:
       - ./infrastructure/certs/admin-key.pem:/usr/share/opensearch/config/certs/admin-key.pem:ro
       - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
     healthcheck:
-      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:${OPENSEARCH_ADMIN_PASSWORD:-vaultize} || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -48,6 +48,7 @@ services:
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=false"
     volumes:
       - opensearch-data-2:/usr/share/opensearch/data
       - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
@@ -56,7 +57,7 @@ services:
       - ./infrastructure/certs/node-key.pem:/usr/share/opensearch/config/certs/node-key.pem:ro
       - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
     healthcheck:
-      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:${OPENSEARCH_ADMIN_PASSWORD:-vaultize} || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -71,6 +72,7 @@ services:
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=false"
     volumes:
       - opensearch-data-3:/usr/share/opensearch/data
       - ./infrastructure/docker/opensearch/opensearch-secure.yml:/usr/share/opensearch/config/opensearch.yml:ro
@@ -79,7 +81,7 @@ services:
       - ./infrastructure/certs/node-key.pem:/usr/share/opensearch/config/certs/node-key.pem:ro
       - ./infrastructure/docker/opensearch/security:/usr/share/opensearch/config/opensearch-security:ro
     healthcheck:
-      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:admin || exit 1"]
+      test: ["CMD-SHELL", "curl -f --insecure https://localhost:9200/_cluster/health -u admin:${OPENSEARCH_ADMIN_PASSWORD:-vaultize} || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -88,14 +90,14 @@ services:
   opensearch-dashboards:
     environment:
       - OPENSEARCH_HOSTS=["https://opensearch-node-1:9200"]
-      # Security dashboards plugin ENABLED (no DISABLE_SECURITY_DASHBOARDS_PLUGIN)
+      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=false"
     volumes:
       - ./infrastructure/docker/opensearch-dashboards/opensearch_dashboards-secure.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
       - ./infrastructure/certs/ca.pem:/usr/share/opensearch-dashboards/config/certs/ca.pem:ro
       - ./infrastructure/certs/node.pem:/usr/share/opensearch-dashboards/config/certs/node.pem:ro
       - ./infrastructure/certs/node-key.pem:/usr/share/opensearch-dashboards/config/certs/node-key.pem:ro
     healthcheck:
-      test: ["CMD-SHELL", "curl -f --insecure https://localhost:5601/api/status || exit 1"]
+      test: ["CMD-SHELL", "curl -f -u admin:${OPENSEARCH_ADMIN_PASSWORD:-vaultize} http://localhost:5601/api/status || exit 1"]
 
   fluent-bit:
     volumes:

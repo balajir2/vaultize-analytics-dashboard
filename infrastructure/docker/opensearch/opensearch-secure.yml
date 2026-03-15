@@ -64,6 +64,10 @@ plugins.security.ssl.http.pemcert_filepath: certs/node.pem
 plugins.security.ssl.http.pemkey_filepath: certs/node-key.pem
 plugins.security.ssl.http.pemtrustedcas_filepath: certs/ca.pem
 
+# Node-to-node certificate DNs (required for inter-node transport auth)
+plugins.security.nodes_dn:
+  - "CN=Vaultize Server,OU=Analytics,O=Vaultize,L=SanFrancisco,ST=CA,C=US"
+
 # Admin certificate DN (for securityadmin.sh)
 plugins.security.authcz.admin_dn:
   - "CN=Admin,OU=Analytics,O=Vaultize,L=SanFrancisco,ST=CA,C=US"

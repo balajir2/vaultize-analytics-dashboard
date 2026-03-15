@@ -53,11 +53,15 @@ def generate_key(key_size: int = 2048) -> rsa.RSAPrivateKey:
 
 
 def save_key(key: rsa.RSAPrivateKey, path: Path) -> None:
-    """Save a private key to PEM file."""
+    """Save a private key to PEM file in PKCS#8 format.
+
+    PKCS#8 (BEGIN PRIVATE KEY) is required by OpenSearch securityadmin.sh.
+    TraditionalOpenSSL (BEGIN RSA PRIVATE KEY) is not accepted.
+    """
     path.write_bytes(
         key.private_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
         )
     )
