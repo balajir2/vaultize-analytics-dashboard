@@ -406,3 +406,126 @@ All resources prefixed `vaultize-` with tag `Project=vaultize`. All CLI and boto
 
 See full configuration, naming conventions, and cost guide: [docs/deployment/aws.md](docs/deployment/aws.md)
 
+### Current State (as of 2026-04-02)
+
+**All AWS resources have been terminated** to eliminate idle costs. No EC2 instances, EBS volumes, Elastic IPs, or snapshots remain. The platform is fully recreatable from this repo alone.
+
+### Recreate from Scratch
+
+The entire platform can be deployed on a fresh EC2 instance in ~20 minutes. Every config, script, and application file is in the repo.
+
+#### Step 1: Launch EC2
+
+```bash
+# Launch Ubuntu 22.04 LTS — t3.large (2 vCPU / 8GB) minimum for PoC
+# t3.xlarge (4 vCPU / 16GB) recommended for production
+# Region: us-east-1 | Security group: allow 22, 80, 443
+# Root volume: 20 GB gp3 | Data volume: 30 GB gp3 mounted at /dev/xvdb
+```
+
+#### Step 2: Instance Setup
+
+```bash
+# Install Docker
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin git
+sudo usermod -aG docker ubuntu && newgrp docker
+
+# Mount data volume (if separate EBS)
+sudo mkfs.ext4 /dev/xvdb
+sudo mkdir -p /opt/vaultize/data
+sudo mount /dev/xvdb /opt/vaultize/data
+echo '/dev/xvdb /opt/vaultize/data ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
+
+# Clone repo
+cd /opt/vaultize
+git clone https://github.com/balajir2/vaultize-analytics-dashboard.git .
+cp .env.example .env
+# Edit .env — set OPENSEARCH_ADMIN_PASSWORD and other secrets
+```
+
+#### Step 3: Generate TLS Certs + Start Platform
+
+```bash
+# Generate self-signed TLS certs (PKCS#8 format required)
+pip install cryptography
+python scripts/ops/generate_certs.py
+
+# Start all services with security overlay
+docker compose -f docker-compose.yml -f docker-compose.security.yml up -d
+
+# Wait for cluster to go green (~60-90 seconds)
+# Initialize OpenSearch security plugin
+./scripts/ops/initialize_security.sh
+```
+
+#### Step 4: Provision Tenants + Data
+
+```bash
+# Apply index template
+curl -k -u admin:$OPENSEARCH_ADMIN_PASSWORD -X PUT \
+  "https://localhost:9200/_index_template/vaultize-events" \
+  -H 'Content-Type: application/json' \
+  -d @configs/index-templates/vaultize-events.json
+
+# Provision tenants
+python scripts/ops/provision_tenant.py --org-id acme-corp --org-name "Acme Corporation" --password "AcmeTest@123"
+python scripts/ops/provision_tenant.py --org-id techstart --org-name "TechStart Inc" --password "TechStart@123"
+
+# Generate sample data
+python scripts/ops/generate_sample_data.py
+```
+
+#### Step 5: Public Access (Optional)
+
+```bash
+# Install Nginx + Certbot for Let's Encrypt TLS
+sudo apt install -y nginx certbot python3-certbot-nginx
+sudo cp infrastructure/nginx/nginx.conf /etc/nginx/sites-available/vaultize
+sudo ln -s /etc/nginx/sites-available/vaultize /etc/nginx/sites-enabled/
+
+# Update DuckDNS (or any DNS) to point to the new instance IP
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+curl "https://www.duckdns.org/update?domains=vaultize&token=YOUR_DUCKDNS_TOKEN&ip=$PUBLIC_IP"
+
+# Get Let's Encrypt cert
+sudo certbot --nginx -d vaultize.duckdns.org --non-interactive --agree-tos -m your@email.com
+sudo systemctl reload nginx
+```
+
+### Key Files for Deployment
+
+| Purpose | File |
+|---------|------|
+| All 10 services | `docker-compose.yml` |
+| Security overlay | `docker-compose.security.yml` |
+| OpenSearch config | `infrastructure/docker/opensearch/opensearch-secure.yml` |
+| Dashboards config | `infrastructure/docker/opensearch-dashboards/opensearch_dashboards-secure.yml` |
+| Security configs (9 files) | `infrastructure/docker/opensearch/security/` |
+| TLS cert generator | `scripts/ops/generate_certs.py` |
+| Security init | `scripts/ops/initialize_security.sh` |
+| Tenant provisioning | `scripts/ops/provision_tenant.py` |
+| Sample data | `scripts/ops/generate_sample_data.py` |
+| Index template | `configs/index-templates/vaultize-events.json` |
+| Nginx reverse proxy | `infrastructure/nginx/nginx.conf` |
+| Fluent Bit config | `ingestion/configs/fluent-bit/fluent-bit-secure.conf` |
+| Prometheus config | `ingestion/configs/prometheus/prometheus.yml` |
+| Grafana provisioning | `dashboards/grafana/provisioning/` |
+| Env var template | `.env.example` |
+| API service | `analytics/api/` (Dockerfile + app/) |
+| Alerting service | `analytics/alerting/` (Dockerfile + app/) |
+| Bootstrap script | `scripts/ops/bootstrap.sh` |
+
+### Gotchas When Recreating
+
+- **DISABLE_SECURITY_PLUGIN**: Base compose sets `=true`. Security overlay sets `=false`. Must use both compose files.
+- **--force-recreate**: After changing compose env vars, use `docker compose up -d --force-recreate` (not `restart`).
+- **PKCS#8 keys**: `securityadmin.sh` requires PKCS#8 (`BEGIN PRIVATE KEY`), not PKCS#1. `generate_certs.py` handles this.
+- **securityadmin.sh**: Runs via transport port 9300, not HTTP 9200. Works before security is initialized.
+- **All 9 security files required**: config.yml, internal_users.yml, roles.yml, roles_mapping.yml, action_groups.yml, tenants.yml, nodes_dn.yml, allowlist.yml, whitelist.yml (legacy name needed).
+- **global_tenant**: Built-in — do not define it in tenants.yml.
+- **Password provisioning**: Use `hash` (bcrypt) field, not `password` — avoids OpenSearch strength validator.
+- **Dashboards**: Serves plain HTTP internally. Nginx handles external TLS. Healthcheck must use `http://`.
+- **Python containers**: No `curl` in slim images — healthchecks use `python3 -c "import urllib.request; ..."`.
+- **t3.large (8GB)**: Tight for 3 OpenSearch nodes + 7 services. Monitor memory. Upgrade to t3.xlarge if OOM.
+- **DuckDNS**: Must update IP after every instance start (no Elastic IP). One curl command.
+
